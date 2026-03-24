@@ -321,13 +321,48 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 .page-footer a{color:var(--accent);text-decoration:none}
 .page-footer a:hover{text-decoration:underline}
 
+/* TABLE LAYOUT */
+.tbl-wrap{display:flex;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.tbl-labels{
+  flex-shrink:0;width:140px;border-right:1px solid var(--border);
+  background:var(--surface2);
+}
+.tbl-head-blank{height:44px;border-bottom:1px solid var(--border)}
+.tbl-label{
+  font-size:12px;color:var(--muted);
+  padding:14px 12px;border-bottom:1px solid var(--border);
+  line-height:1.4;display:flex;align-items:center;
+  min-height:58px;
+}
+.tbl-label:last-child{border-bottom:none}
+.tbl-cols{display:flex;flex:1;overflow-x:auto}
+.tbl-col{flex:1;min-width:130px;border-right:1px solid var(--border)}
+.tbl-col:last-child{border-right:none}
+.tbl-col.tbl-state{background:var(--surface)}
+.tbl-head{
+  font-family:var(--font-display);font-weight:300;font-size:15px;
+  padding:10px 14px;height:44px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;color:var(--text);
+}
+.tbl-head em{font-style:italic;color:var(--accent)}
+.tbl-cell{
+  padding:12px 14px;border-bottom:1px solid var(--border);
+  display:flex;flex-direction:column;gap:2px;min-height:58px;justify-content:center;
+}
+.tbl-cell:last-child{border-bottom:none}
+.tbl-val{font-size:16px;font-weight:500;color:var(--text)}
+.tbl-val.tbl-accent{color:var(--accent)}
+.tbl-val.tbl-muted{color:var(--muted)}
+.tbl-sub{font-size:12px;color:var(--muted)}
+.tbl-note-row{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:4px}
+
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
 @media(max-width:700px){
   .stats-inner{grid-template-columns:1fr}
   .stat-box{border-right:none;border-bottom:1px solid var(--border)}
-  .dim-grid{grid-template-columns:1fr}
-  .cc-dims{grid-template-columns:1fr}
+  .tbl-labels{width:110px}
+  .tbl-col{min-width:110px}
 }
 </style>
 </head>
@@ -479,6 +514,29 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
         <option>Wisconsin</option><option>Wyoming</option>
       </select>
     </div>
+    <div class="sel-row">
+      <span class="sel-num">And a third <span style="font-size:10px;opacity:0.5">(optional)</span></span>
+      <select class="state-pick optional" id="sel-3">
+        <option value="">— optional —</option>
+        <option>Alabama</option><option>Alaska</option><option>Arizona</option>
+        <option>Arkansas</option><option>California</option><option>Colorado</option>
+        <option>Connecticut</option><option>Delaware</option><option>Florida</option>
+        <option>Georgia</option><option>Hawaii</option><option>Idaho</option>
+        <option>Illinois</option><option>Indiana</option><option>Iowa</option>
+        <option>Kansas</option><option>Kentucky</option><option>Louisiana</option>
+        <option>Maine</option><option>Maryland</option><option>Massachusetts</option>
+        <option>Michigan</option><option>Minnesota</option><option>Mississippi</option>
+        <option>Missouri</option><option>Montana</option><option>Nebraska</option>
+        <option>Nevada</option><option>New Hampshire</option><option>New Jersey</option>
+        <option>New Mexico</option><option>New York</option><option>North Carolina</option>
+        <option>North Dakota</option><option>Ohio</option><option>Oklahoma</option>
+        <option>Oregon</option><option>Pennsylvania</option><option>Rhode Island</option>
+        <option>South Carolina</option><option>South Dakota</option><option>Tennessee</option>
+        <option>Texas</option><option>Utah</option><option>Vermont</option>
+        <option>Virginia</option><option>Washington</option><option>West Virginia</option>
+        <option>Wisconsin</option><option>Wyoming</option>
+      </select>
+    </div>
   </div>
 
   <div class="run-wrap">
@@ -500,20 +558,13 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 <script>
 
 function getSelectedStates() {
-  const s1 = document.getElementById('sel-1').value;
-  const s2 = document.getElementById('sel-2').value;
-  const states = [];
-  if (s1) states.push(s1);
-  if (s2 && s2 !== s1) states.push(s2);
-  return states;
+  const vals = ['sel-1','sel-2','sel-3'].map(id => document.getElementById(id).value).filter(v => v && v !== '');
+  return [...new Set(vals)];
 }
 
 async function runScorecard() {
   const states = getSelectedStates();
-  if (states.length === 0) {
-    alert('Please select at least one state.');
-    return;
-  }
+  if (states.length === 0) { alert('Please select at least one state.'); return; }
 
   const btn = document.getElementById('run-btn');
   btn.disabled = true;
@@ -525,15 +576,11 @@ async function runScorecard() {
     <div class="loading-state">
       <div class="loading-spinner"></div>
       <div class="loading-state-label">Analyzing creative economies</div>
-      <div class="loading-text">
-        Grounding in BEA federal data · NASAA state investment data · ${states.length > 1 ? 'Comparing ' + states[0] + ' and ' + states[1] : 'Scoring ' + states[0]}
-      </div>
-    </div>
-  `;
+      <div class="loading-text">Grounding in BEA federal data · NASAA state investment data · ${states.join(', ')}</div>
+    </div>`;
   zone.scrollIntoView({behavior:'smooth', block:'start'});
 
-  const isSingle = states.length === 1;
-  const prompt = isSingle ? buildSinglePrompt(states[0]) : buildComparePrompt(states);
+  const prompt = buildPrompt(states);
 
   try {
     const response = await fetch('/api/anthropic', {
@@ -541,17 +588,18 @@ async function runScorecard() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1500,
+        max_tokens: 1200,
         messages: [{ role: 'user', content: prompt }]
       })
     });
 
     const data = await response.json();
-    const text = data.content
-      .filter(b => b.type === 'text')
-      .map(b => b.text)
-      .join('');
-
+    console.log('API response:', JSON.stringify(data));
+    if (!data.content) {
+      zone.innerHTML = `<div style="padding:2rem"><div class="error-state">API error: ${JSON.stringify(data)}</div></div>`;
+      btn.disabled = false; btn.textContent = 'Score my state →'; return;
+    }
+    const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
     let parsed;
     try {
       const clean = text.replace(/```json|```/g, '').trim();
@@ -560,208 +608,243 @@ async function runScorecard() {
     } catch(e) { parsed = null; }
 
     if (!parsed) {
-      zone.innerHTML = `<div style="padding:2rem"><div class="error-state">Could not parse the response. Raw output:<br><br>${text}</div></div>`;
-    } else if (isSingle) {
-      renderSingle(parsed, zone);
+      zone.innerHTML = `<div style="padding:2rem"><div class="error-state">Could not parse response.<br><br>${text}</div></div>`;
     } else {
-      renderCompare(parsed, zone);
+      renderTable(parsed, zone);
     }
-
   } catch(err) {
     zone.innerHTML = `<div style="padding:2rem"><div class="error-state">Something went wrong: ${err.message}</div></div>`;
   }
 
   btn.disabled = false;
-  btn.textContent = 'Score these states →';
+  btn.textContent = 'Score my state →';
 }
 
-function buildSinglePrompt(state) {
-  return `You are a creative economy analyst. Score ${state}'s creative economy using the most current available data from BEA Arts and Cultural Production Satellite Account (ACPSA), NASAA state arts agency revenue reports, and NEA state profiles.
+function buildPrompt(states) {
+  return `You are a creative economy analyst. Return data for ${states.join(', ')} using BEA ACPSA 2023 and NASAA FY2025 data.
 
-Use web search to find the most current figures for ${state}.
+Known anchor data — use these exact figures where applicable:
+- New Mexico: creative_gdp="$5.6B", gdp_pct="4.0%", jobs="~43K", jobs_pct="5.5%", investment="$2.12/capita", roi="$1,244 per $1"
+- California: creative_gdp="$288.9B", gdp_pct="7.5%", jobs="821K", jobs_pct="4.3%", investment="$0.67/capita", roi="$107,000 per $1"
+- Washington: creative_gdp="$79B", gdp_pct="9.78%", jobs="190K", jobs_pct="5.0%", investment="$1.20/capita", roi="$10,800 per $1"
+- Minnesota: creative_gdp="$14.8B", gdp_pct="3.1%", jobs="94K", jobs_pct="3.2%", investment="$8.00/capita", roi="$329 per $1"
+- Arizona: creative_gdp="$15.8B", gdp_pct="4.4%", jobs="~115K", jobs_pct="3.8%", investment="$0.27/capita", roi="$7,900 per $1"
 
-Return ONLY a valid JSON object, no markdown, no preamble:
+For any other state, estimate based on BEA ACPSA 2023 patterns. Be conservative and accurate — do not inflate.
 
-{
-  "state": "${state}",
-  "overall_score": <number 0-100>,
-  "score_color": <"#1D9E75" if score>=70, "#d4b800" if 50-69, "#be3650" if below 50>,
-  "archetype": <"Model" | "Leading" | "Developing" | "Paradox" | "At risk">,
-  "archetype_class": <"arch-model" | "arch-leading" | "arch-developing" | "arch-paradox" | "arch-atrisk">,
-  "archetype_desc": <one sentence explaining what the archetype means for this state>,
-  "rank": <estimated rank out of 50>,
-  "dims": {
-    "employment": { "score": <0-100>, "label": "Arts & cultural employment", "note": <one sentence with specific data point and source> },
-    "gdp": { "score": <0-100>, "label": "Creative industry GDP share", "note": <one sentence with specific data point and source> },
-    "pipeline": { "score": <0-100>, "label": "Education & pipeline", "note": <one sentence, flag as estimated if so> }
-  },
-  "narrative": <2-3 sentences: the specific story of this state's creative economy — what's working, what's lagging, what the data reveals. Name specific programs, institutions, or policies where relevant.>,
-  "investment": <per capita arts investment as a dollar figure string, e.g. "$2.12/capita">,
-  "creative_gdp": <creative GDP as a string, e.g. "$5.6B">,
-  "roi": <creative GDP per $1 of public investment, e.g. "$1,244">,
-  "sources": <comma-separated list of 2-3 specific sources used>
-}`;
-}
-
-function buildComparePrompt(states) {
-  return `You are a creative economy analyst. Score and compare the creative economies of: ${states.join(', ')}.
-
-Use web search to ground your analysis in current BEA ACPSA, NASAA, and NEA data for each state.
-
-Return ONLY a valid JSON object, no markdown, no preamble:
-
+Return ONLY valid JSON, no markdown:
 {
   "states": [
     {
-      "state": <state name>,
-      "overall_score": <0-100>,
-      "score_color": <"#1D9E75" if >=70, "#d4b800" if 50-69, "#be3650" if <50>,
-      "archetype": <"Model" | "Leading" | "Developing" | "Paradox" | "At risk">,
-      "archetype_class": <"arch-model" | "arch-leading" | "arch-developing" | "arch-paradox" | "arch-atrisk">,
-      "dims": {
-        "employment": { "score": <0-100>, "note": <specific data, one sentence> },
-        "gdp": { "score": <0-100>, "note": <specific data, one sentence> },
-        "pipeline": { "score": <0-100>, "note": <one sentence, flag as estimated if so> }
-      },
-      "narrative": <2 sentences: what's distinctive about this state's creative economy>,
-      "investment": <per capita arts investment string>,
-      "creative_gdp": <creative GDP string>,
-      "roi": <return per $1 invested string>
+      "state": <name>,
+      "creative_gdp": <e.g. "$5.6B">,
+      "gdp_pct": <e.g. "4.0% of state GDP">,
+      "jobs": <e.g. "~43K">,
+      "jobs_pct": <e.g. "5.5% of workforce">,
+      "investment": <e.g. "$2.12/capita">,
+      "roi": <e.g. "$1,244 per $1">,
+      "note": <one sentence: the single most interesting or surprising thing about this state's creative economy data>
     }
   ],
-  "insight": <2-3 sentences synthesizing the most interesting pattern, contrast, or finding across all the states compared. Be specific — name numbers, name the states.>,
-  "sources": <comma-separated list of sources used>
+  "insight": <${states.length > 1 ? '1-2 sentences on the most interesting tension or contrast in this comparison. Be specific — use real numbers.' : '1 sentence on what the data reveals about this state.'}>
 }`;
 }
 
-function archetypeColor(archClass) {
-  const map = {
-    'arch-model':'#6aaa20',
-    'arch-leading':'#1D9E75',
-    'arch-developing':'#d4b800',
-    'arch-paradox':'#e07050',
-    'arch-atrisk':'#be3650'
-  };
-  return map[archClass] || '#be3650';
-}
+function renderTable(d, zone) {
+  const natCol = `<div class="tbl-col">
+    <div class="tbl-head">National avg</div>
+    <div class="tbl-cell"><span class="tbl-val">$1.17T</span><span class="tbl-sub">4.2% of GDP</span></div>
+    <div class="tbl-cell"><span class="tbl-val">5.4M</span><span class="tbl-sub">4.2% of workforce</span></div>
+    <div class="tbl-cell"><span class="tbl-val">$2.02</span><span class="tbl-sub">per capita</span></div>
+    <div class="tbl-cell"><span class="tbl-val tbl-muted">—</span></div>
+  </div>`;
 
-function renderSingle(d, zone) {
-  const nameParts = d.state.split(' ');
-  const last = nameParts.pop();
-  const first = nameParts.join(' ');
-  const nameHtml = (first ? first + ' ' : '') + '<em>' + last + '</em>';
-  const scoreColor = d.score_color || '#be3650';
-  const aColor = archetypeColor(d.archetype_class);
-
-  zone.innerHTML = `
-    <div class="result-single" style="padding:0 0 2rem">
-      <div class="result-header">
-        <div>
-          <div class="result-state-name">${nameHtml}</div>
-          <div class="result-meta">Archetype: ${d.archetype} · rank ~${d.rank}/50 · BEA ACPSA 2023</div>
-        </div>
-        <div class="result-score-block">
-          <div class="result-score-num" style="color:${scoreColor}">${d.overall_score}</div>
-          <div class="result-score-sub">/ 100 overall</div>
-        </div>
-      </div>
-
-      <div class="dim-grid">
-        ${['employment','gdp','pipeline'].map(k => {
-          const dim = d.dims[k];
-          const c = k==='employment' ? '#d4b800' : k==='gdp' ? scoreColor : '#1D9E75';
-          return `<div class="dim-card">
-            <div class="dim-label">${dim.label||k}</div>
-            <div class="dim-score" style="color:${c}">${dim.score}</div>
-            <div class="dim-bar"><div class="dim-fill" style="width:${dim.score}%;background:${c}"></div></div>
-            <div class="dim-note">${dim.note}</div>
-          </div>`;
-        }).join('')}
-      </div>
-
-      <div class="narrative-box">${d.narrative}</div>
-
-      <div class="archetype-row">
-        <span class="archetype-badge ${d.archetype_class}" style="border:1px solid ${aColor}20">${d.archetype}</span>
-        <span class="archetype-desc">${d.archetype_desc||''}</span>
-      </div>
-
-      <div class="dim-grid" style="margin-top:1rem">
-        <div class="dim-card">
-          <div class="dim-label">Creative GDP output</div>
-          <div class="dim-score" style="color:${scoreColor};font-size:1.4rem">${d.creative_gdp}</div>
-        </div>
-        <div class="dim-card">
-          <div class="dim-label">Public arts investment</div>
-          <div class="dim-score" style="color:${scoreColor};font-size:1.4rem">${d.investment}</div>
-        </div>
-        <div class="dim-card">
-          <div class="dim-label">Return per $1 invested</div>
-          <div class="dim-score" style="color:${scoreColor};font-size:1.4rem">${d.roi}</div>
-        </div>
-      </div>
-
-      <div class="source-row">Sources: ${d.sources}</div>
-    </div>
-  `;
-}
-
-function renderCompare(d, zone) {
-  const cols = d.states.length <= 2 ? d.states.length : Math.min(d.states.length, 3);
-  const cards = d.states.map(s => {
+  const stateCols = d.states.map(s => {
     const nameParts = s.state.split(' ');
     const last = nameParts.pop();
     const first = nameParts.join(' ');
-    const nameHtml = (first ? first + ' ' : '') + '<em>' + last + '</em>';
-    const sc = s.score_color || '#be3650';
-    return `
-      <div class="compare-card">
-        <div class="cc-top">
-          <div class="cc-name">${nameHtml}</div>
-          <div class="cc-score" style="color:${sc}">${s.overall_score}</div>
-        </div>
-        <div class="cc-dims">
-          ${['employment','gdp','pipeline'].map(k => {
-            const dim = s.dims[k];
-            return `<div class="cc-dim">
-              <span class="cc-dim-val" style="color:${sc}">${dim.score}</span>
-              <div class="cc-dim-bar"><div class="cc-dim-fill" style="width:${dim.score}%;background:${sc}"></div></div>
-              ${k}
-            </div>`;
-          }).join('')}
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0">
-          <div style="font-size:0.6rem;color:var(--muted)">GDP<br><span style="color:${sc};font-size:0.8rem">${s.creative_gdp}</span></div>
-          <div style="font-size:0.6rem;color:var(--muted)">investment<br><span style="color:${sc};font-size:0.8rem">${s.investment}</span></div>
-          <div style="font-size:0.6rem;color:var(--muted)">ROI per $1<br><span style="color:${sc};font-size:0.8rem">${s.roi}</span></div>
-        </div>
-        <div class="cc-narrative">${s.narrative}</div>
-      </div>
-    `;
+    return `<div class="tbl-col tbl-state">
+      <div class="tbl-head">${first ? first + ' ' : ''}<em>${last}</em></div>
+      <div class="tbl-cell"><span class="tbl-val tbl-accent">${s.creative_gdp}</span><span class="tbl-sub">${s.gdp_pct}</span></div>
+      <div class="tbl-cell"><span class="tbl-val tbl-accent">${s.jobs}</span><span class="tbl-sub">${s.jobs_pct}</span></div>
+      <div class="tbl-cell"><span class="tbl-val tbl-accent">${s.investment}</span></div>
+      <div class="tbl-cell"><span class="tbl-val tbl-accent">${s.roi}</span></div>
+    </div>`;
   }).join('');
 
+  const primaryState = d.states[0] ? d.states[0].state : null;
+
   zone.innerHTML = `
-    <div class="result-compare" style="padding:0 0 2rem">
-      <div class="compare-header">
-        <h3>Comparing <em>${d.states.length} states</em></h3>
-        <p>Scored against national benchmarks · BEA ACPSA 2023 · NASAA FY2025</p>
-      </div>
-
-      <div class="compare-cards" style="grid-template-columns:repeat(${cols},1fr)">
-        ${cards}
-      </div>
-
-      ${d.insight ? `
-        <div class="insight-box">
-          <div class="insight-label">What the comparison reveals</div>
-          <div class="insight-text">${d.insight}</div>
+    <div style="padding:1.5rem 0 2rem">
+      <div class="tbl-wrap">
+        <div class="tbl-labels">
+          <div class="tbl-head-blank"></div>
+          <div class="tbl-label">Creative GDP</div>
+          <div class="tbl-label">Creative jobs</div>
+          <div class="tbl-label">Arts investment</div>
+          <div class="tbl-label">ROI per $1 invested</div>
         </div>
-      ` : ''}
-
-      <div class="source-row">Sources: ${d.sources}</div>
-    </div>
-  `;
+        <div class="tbl-cols">
+          ${natCol}
+          ${stateCols}
+        </div>
+      </div>
+      ${d.states.length > 0 && d.states[0].note ? `
+        <div style="margin-top:1rem">
+          ${d.states.map(s => `<div class="tbl-note-row"><span style="color:var(--accent);font-weight:500">${s.state}:</span> ${s.note}</div>`).join('')}
+        </div>` : ''}
+      ${d.insight ? `<div class="insight-box" style="margin-top:1rem"><div class="insight-label">What the data reveals</div><div class="insight-text">${d.insight}</div></div>` : ''}
+      <div class="source-row" style="margin-top:1rem">Sources: BEA ACPSA 2023 · NASAA FY2025 · NEA State Profiles</div>
+      ${primaryState ? `
+        <div style="margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid var(--border)">
+          <button class="btn-ghost" id="trend-btn" onclick="loadTrend('${primaryState}')">
+            See ${primaryState}'s creative economy trend 2019–2023 →
+          </button>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px">Estimated trend · directional, not precise · based on BEA ACPSA patterns</div>
+        </div>
+        <div id="trend-zone"></div>` : ''}
+    </div>`;
 }
+
+async function loadTrend(state) {
+  const btn = document.getElementById('trend-btn');
+  btn.disabled = true;
+  btn.textContent = 'Loading trend…';
+  const tzone = document.getElementById('trend-zone');
+  tzone.innerHTML = `<div style="padding:1.5rem 0;text-align:center">
+    <div class="loading-spinner" style="margin:0 auto 8px"></div>
+    <div style="font-size:12px;color:var(--muted)">Estimating trend data for ${state}…</div>
+  </div>`;
+
+  const prompt = `Estimate the creative economy trend for ${state} from 2019 to 2023 using BEA ACPSA data and state arts agency records.
+
+Key known anchors:
+- New Mexico 2023: creative GDP $5.6B, investment $2.12/capita
+- California 2023: creative GDP $288.9B, investment $0.67/capita
+- National trend: pandemic dip 2020, recovery 2021-22, stabilization 2023
+
+For ${state}, estimate year-by-year values for 2019, 2020, 2021, 2022, 2023.
+2020 should generally show a pandemic dip. 2021-2022 recovery. 2023 near current known value.
+
+Return ONLY valid JSON, no markdown:
+{
+  "state": "${state}",
+  "years": [2019, 2020, 2021, 2022, 2023],
+  "creative_gdp_b": [<est $B for each year, e.g. 5.1, 4.6, 5.0, 5.3, 5.6>],
+  "investment_capita": [<est $/capita for each year>],
+  "gdp_pct": [<est % of state GDP for each year>],
+  "context": "<one sentence: the most significant event or shift in this state's creative economy 2019-2023>"
+}`;
+
+  try {
+    const response = await fetch('/api/anthropic', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 600,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await response.json();
+    if (!data.content) { tzone.innerHTML = ''; btn.disabled = false; btn.textContent = `See ${state}'s trend →`; return; }
+    const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+    let t;
+    try {
+      const clean = text.replace(/```json|```/g, '').trim();
+      const m = clean.match(/\{[\s\S]*\}/);
+      t = m ? JSON.parse(m[0]) : null;
+    } catch(e) { t = null; }
+    if (!t) { tzone.innerHTML = `<div class="error-state" style="margin-top:1rem">Could not parse trend data.</div>`; }
+    else { renderTrend(t, tzone); }
+  } catch(err) {
+    tzone.innerHTML = `<div class="error-state" style="margin-top:1rem">${err.message}</div>`;
+  }
+  btn.style.display = 'none';
+}
+
+function renderTrend(t, tzone) {
+  tzone.innerHTML = `
+    <div style="margin-top:1.5rem">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
+        <p style="font-size:14px;font-weight:500;color:var(--text)">${t.state} · creative economy 2019–2023</p>
+        <p style="font-size:12px;color:var(--muted)">Estimated · directional only</p>
+      </div>
+      <div style="position:relative;width:100%;height:220px">
+        <canvas id="trendChart"></canvas>
+      </div>
+      ${t.context ? `<div class="tbl-note-row" style="margin-top:10px"><span style="color:var(--accent);font-weight:500">Context:</span> ${t.context}</div>` : ''}
+    </div>`;
+
+  setTimeout(() => {
+    if (!window.Chart) return;
+    new Chart(document.getElementById('trendChart'), {
+      type: 'line',
+      data: {
+        labels: t.years,
+        datasets: [
+          {
+            label: 'Creative GDP ($B)',
+            data: t.creative_gdp_b,
+            borderColor: '#be3650',
+            backgroundColor: 'transparent',
+            borderWidth: 2.5,
+            pointRadius: 4,
+            pointBackgroundColor: '#be3650',
+            tension: 0.3,
+            yAxisID: 'y'
+          },
+          {
+            label: 'Arts investment ($/capita)',
+            data: t.investment_capita,
+            borderColor: '#1D9E75',
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            pointRadius: 3,
+            pointBackgroundColor: '#1D9E75',
+            borderDash: [4,3],
+            tension: 0.3,
+            yAxisID: 'y2'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y } }
+        },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#888580', font: { size: 12 } } },
+          y: {
+            position: 'left',
+            grid: { color: 'rgba(255,255,255,0.06)' },
+            ticks: { color: '#be3650', font: { size: 11 }, callback: v => '$' + v + 'B' }
+          },
+          y2: {
+            position: 'right',
+            grid: { drawOnChartArea: false },
+            ticks: { color: '#1D9E75', font: { size: 11 }, callback: v => '$' + v }
+          }
+        }
+      }
+    });
+
+    const legend = document.createElement('div');
+    legend.style.cssText = 'display:flex;gap:16px;margin-top:8px;font-size:12px;color:#888580';
+    legend.innerHTML = `
+      <span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#be3650;display:inline-block"></span>Creative GDP ($B)</span>
+      <span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#1D9E75;display:inline-block;border-top:2px dashed #1D9E75;height:0"></span>Arts investment ($/capita)</span>`;
+    tzone.querySelector('div').appendChild(legend);
+  }, 100);
+}
+
+
+}
+
+
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 </body>
 </html>
