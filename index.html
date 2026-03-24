@@ -622,10 +622,18 @@ async function runScorecard() {
 
 function buildPrompt(states) {
   const stateList = states.join(', ');
-  return 'You are a creative economy analyst. Return data for ' + stateList + ' using BEA ACPSA 2023 data.\n\n'
-    + 'Investment data will be supplied from real NASAA data — do NOT return investment field, it is ignored.\n\n'
-    + 'For % of GDP, jobs, and ROI: use BEA ACPSA 2023 data. Estimate conservatively. Do not inflate.\n\n'
-    + 'Return ONLY valid JSON. No markdown. Use this structure exactly: {"states":[{"state":"name","gdp_pct":"X% of state GDP","jobs":"~XK","jobs_pct":"X% of workforce","roi":"$X per $1"}],"insight":""}';
+  // Only asking Claude for ROI — all other fields now come from real BEA/NASAA data
+  return 'You are a creative economy analyst. For each state listed, calculate the ROI per $1 of public arts investment.\n\n'
+    + 'Formula: divide total creative economy value added (BEA ACPSA 2023) by total state arts agency appropriation (NASAA FY2025).\n\n'
+    + 'Known anchors (use exact figures):\n'
+    + states.map(s => {
+        const b = BEA_DATA.states[s];
+        const n = NASAA_TOTALS.states[s];
+        if (!b || !n) return null;
+        const roi = Math.round((b.gdp_b * 1000) / n.total_fy2025);
+        return `- ${s}: creative GDP $${b.gdp_b}B · total appropriation $${n.total_fy2025}M · ROI = $${roi.toLocaleString()} per $1`;
+      }).filter(Boolean).join('\n')
+    + '\n\nReturn ONLY valid JSON. No markdown: {"states":[{"state":"name","roi":"$X,XXX per $1"}]}';
 }
 
 
@@ -644,10 +652,10 @@ function renderTable(d, zone) {
 
   const natCol = `<div class="tbl-col">
     <div class="tbl-head">National Avg</div>
-    <div class="tbl-cell"><span class="tbl-val">$879M</span><span class="tbl-sub">FY2025 total</span></div>
-    <div class="tbl-cell"><span class="tbl-val">$2.02</span><span class="tbl-sub">per capita · FY2025</span></div>
-    <div class="tbl-cell"><span class="tbl-val">4.2%</span><span class="tbl-sub">of state GDP</span></div>
-    <div class="tbl-cell"><span class="tbl-val">5.4M jobs</span><span class="tbl-sub">4.2% of workforce</span></div>
+    <div class="tbl-cell"><span class="tbl-val">$694M</span><span class="tbl-sub">FY2025 total · NASAA</span></div>
+    <div class="tbl-cell"><span class="tbl-val">$2.02</span><span class="tbl-sub">per capita · NASAA FY2025</span></div>
+    <div class="tbl-cell"><span class="tbl-val">${BEA_DATA.national.gdp_pct}%</span><span class="tbl-sub">of GDP · BEA 2023</span></div>
+    <div class="tbl-cell"><span class="tbl-val">${(BEA_DATA.national.jobs/1000000).toFixed(1)}M jobs</span><span class="tbl-sub">${BEA_DATA.national.jobs_pct}% of workforce · BEA 2023</span></div>
     <div class="tbl-cell"><span class="tbl-val tbl-muted">—</span></div>
   </div>`;
 
@@ -666,15 +674,18 @@ function renderTable(d, zone) {
     const last = nameParts.pop();
     const first = nameParts.join(' ');
 
-    // Extract just the number from gdp_pct e.g. "4.2% of state GDP" → "4.2%"
-    const gdpNum = (s.gdp_pct || '—').replace(/ of state GDP.*/i, '').trim();
+    // Pull GDP and jobs from real BEA data
+    const bd = BEA_DATA.states[s.state];
+    const gdpPctStr  = bd ? bd.gdp_pct + '%'                              : (s.gdp_pct || '—').replace(/ of state GDP.*/i,'').trim();
+    const jobsStr    = bd ? (bd.jobs >= 1000 ? Math.round(bd.jobs/1000) + 'K' : bd.jobs.toString()) : (s.jobs || '—');
+    const jobsPctStr = bd ? bd.jobs_pct + '% of workforce'               : (s.jobs_pct || '');
 
     return `<div class="tbl-col tbl-state">
       <div class="tbl-head" style="color:var(--text)">${first ? first + ' ' : ''}<em style="color:${color}">${last}</em></div>
       <div class="tbl-cell"><span class="tbl-val tbl-accent" style="color:${color}">${totalStr}</span><span class="tbl-sub">FY2025 total</span></div>
       <div class="tbl-cell"><span class="tbl-val tbl-accent" style="color:${color}">${pcStr}</span><span class="tbl-sub">${rankStr}</span></div>
-      <div class="tbl-cell"><span class="tbl-val tbl-accent" style="color:${color}">${gdpNum}</span><span class="tbl-sub">of state GDP</span></div>
-      <div class="tbl-cell"><span class="tbl-val tbl-accent" style="color:${color}">${s.jobs || '—'}</span><span class="tbl-sub">${s.jobs_pct || ''}</span></div>
+      <div class="tbl-cell"><span class="tbl-val tbl-accent" style="color:${color}">${gdpPctStr}</span><span class="tbl-sub">of state GDP</span></div>
+      <div class="tbl-cell"><span class="tbl-val tbl-accent" style="color:${color}">${jobsStr}</span><span class="tbl-sub">${jobsPctStr}</span></div>
       <div class="tbl-cell"><span class="tbl-val tbl-accent" style="color:${color}">${s.roi || '—'}</span></div>
     </div>`;
   }).join('');
@@ -696,7 +707,7 @@ function renderTable(d, zone) {
         </div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:1.2rem">
-        <div class="source-row" style="margin:0">Sources: BEA ACPSA 2023 · NASAA FY2023 &amp; FY2025 Reports · Investment &amp; ranking data verified</div>
+        <div class="source-row" style="margin:0">BEA ACPSA 2023 (final published dataset) · NASAA State Arts Agency Revenues FY2025 · Investment &amp; GDP data verified, not estimated</div>
         <button class="btn-ghost" id="screenshot-btn" onclick="takeScreenshot()" style="font-size:12px;padding:7px 14px">
           ↓ save as image
         </button>
@@ -846,146 +857,7 @@ function renderNASAATrend(states) {
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script>
-// ─── NASAA Real Data ───────────────────────────────────────────────────────
-// Source: NASAA State Arts Agency Revenues Reports, Table 6
-// Metric: Legislative Appropriation Including Line Items ($/capita)
-// FY2022 derived from Table 1/5 revenue totals · FY2023 & FY2025 direct from Table 6
-// FY2024 derived from Table 5 FY2024 revenue totals
-const NASAA_DATA = {
-  years: [2022, 2023, 2024, 2025],
-  national: [2.47, 2.88, 2.23, 2.02],
-  states: {
-    "Alabama":        [1.32, 1.50, 2.01, 1.58],
-    "Alaska":         [0.96, 1.05, 0.94, 1.24],
-    "Arizona":        [0.62, 0.68, 0.97, 0.26],
-    "Arkansas":       [0.44, 0.45, 0.46, 0.48],
-    "California":     [4.31, 3.48, 1.01, 0.82],
-    "Colorado":       [0.34, 0.35, 0.39, 0.55],
-    "Connecticut":    [9.44, 10.38, 2.27, 1.88],
-    "Delaware":       [3.81, 3.81, 4.78, 5.62],
-    "Florida":        [1.97, 3.76, 2.59, 1.31],
-    "Georgia":        [0.14, 0.14, 0.15, 0.14],
-    "Hawaii":         [5.40, 5.05, 11.14, 11.10],
-    "Idaho":          [0.47, 0.47, 0.54, 0.47],
-    "Illinois":       [5.05, 5.06, 5.17, 2.71],
-    "Indiana":        [0.53, 0.53, 0.77, 0.75],
-    "Iowa":           [0.46, 0.46, 0.68, 0.69],
-    "Kansas":         [0.17, 0.17, 0.35, 0.51],
-    "Kentucky":       [0.39, 0.40, 0.41, 0.40],
-    "Louisiana":      [0.47, 0.47, 0.46, 0.46],
-    "Maine":          [0.73, 0.74, 0.74, 0.74],
-    "Maryland":       [4.34, 4.51, 5.70, 5.47],
-    "Massachusetts":  [3.10, 3.35, 3.74, 3.76],
-    "Michigan":       [0.98, 1.18, 0.87, 1.10],
-    "Minnesota":      [7.37, 7.62, 9.68, 10.07],
-    "Mississippi":    [0.56, 2.01, 3.57, 3.38],
-    "Missouri":       [1.15, 3.01, 4.74, 8.72],
-    "Montana":        [0.51, 0.47, 1.02, 1.00],
-    "Nebraska":       [1.30, 5.13, 1.33, 1.31],
-    "Nevada":         [0.63, 0.66, 0.72, 0.75],
-    "New Hampshire":  [0.60, 0.60, 1.04, 1.01],
-    "New Jersey":     [6.63, 4.40, 4.93, 4.32],
-    "New Mexico":     [0.67, 0.75, 0.82, 0.79],
-    "New York":       [5.42, 12.27, 5.59, 4.39],
-    "North Carolina": [2.22, 0.85, 1.18, 1.12],
-    "North Dakota":   [1.08, 1.10, 1.72, 1.65],
-    "Ohio":           [1.71, 1.71, 2.19, 2.15],
-    "Oklahoma":       [0.75, 0.81, 1.06, 1.06],
-    "Oregon":         [0.96, 2.64, 1.43, 1.89],
-    "Pennsylvania":   [0.81, 0.81, 0.81, 0.82],
-    "Rhode Island":   [1.99, 2.01, 2.17, 2.15],
-    "South Carolina": [8.90, 2.64, 2.49, 2.24],
-    "South Dakota":   [1.23, 1.22, 1.47, 1.52],
-    "Tennessee":      [1.41, 1.56, 2.17, 2.22],
-    "Texas":          [0.34, 0.34, 0.47, 0.46],
-    "Utah":           [2.73, 2.79, 2.14, 3.09],
-    "Vermont":        [1.23, 1.33, 1.52, 1.50],
-    "Virginia":       [0.46, 0.53, 0.54, 0.52],
-    "Washington":     [0.42, 0.68, 0.86, 0.98],
-    "West Virginia":  [0.51, 0.54, 0.44, 0.46],
-    "Wisconsin":      [0.14, 0.14, 0.19, 0.18],
-    "Wyoming":        [1.60, 1.54, 1.68, 1.83]
-  }
-};
-
-// ─── NASAA Totals FY2025 ────────────────────────────────────────────────────
-// Source: NASAA FY2025 Report, Table 1 (total incl. line items) & Table 2 (excl.)
-// Values in millions of dollars
-const NASAA_TOTALS = {
-  states: {
-    "Alabama":        { total_fy2025: 8.16,   baseline_fy2025: 6.83  },
-    "Alaska":         { total_fy2025: 0.92,   baseline_fy2025: 0.92  },
-    "Arizona":        { total_fy2025: 2.00,   baseline_fy2025: 2.00  },
-    "Arkansas":       { total_fy2025: 1.47,   baseline_fy2025: 1.47  },
-    "California":     { total_fy2025: 32.39,  baseline_fy2025: 32.39 },
-    "Colorado":       { total_fy2025: 3.27,   baseline_fy2025: 3.27  },
-    "Connecticut":    { total_fy2025: 6.91,   baseline_fy2025: 1.50  },
-    "Delaware":       { total_fy2025: 5.91,   baseline_fy2025: 5.91  },
-    "Florida":        { total_fy2025: 30.67,  baseline_fy2025: 0.74  },
-    "Georgia":        { total_fy2025: 1.59,   baseline_fy2025: 1.59  },
-    "Hawaii":         { total_fy2025: 16.05,  baseline_fy2025: 6.55  },
-    "Idaho":          { total_fy2025: 0.93,   baseline_fy2025: 0.93  },
-    "Illinois":       { total_fy2025: 34.40,  baseline_fy2025: 19.73 },
-    "Indiana":        { total_fy2025: 5.20,   baseline_fy2025: 5.20  },
-    "Iowa":           { total_fy2025: 2.22,   baseline_fy2025: 1.15  },
-    "Kansas":         { total_fy2025: 1.52,   baseline_fy2025: 1.52  },
-    "Kentucky":       { total_fy2025: 1.83,   baseline_fy2025: 1.83  },
-    "Louisiana":      { total_fy2025: 2.11,   baseline_fy2025: 2.11  },
-    "Maine":          { total_fy2025: 1.04,   baseline_fy2025: 1.04  },
-    "Maryland":       { total_fy2025: 34.25,  baseline_fy2025: 33.33 },
-    "Massachusetts":  { total_fy2025: 26.85,  baseline_fy2025: 25.90 },
-    "Michigan":       { total_fy2025: 11.13,  baseline_fy2025: 9.51  },
-    "Minnesota":      { total_fy2025: 58.32,  baseline_fy2025: 58.32 },
-    "Mississippi":    { total_fy2025: 9.94,   baseline_fy2025: 9.94  },
-    "Missouri":       { total_fy2025: 54.44,  baseline_fy2025: 10.95 },
-    "Montana":        { total_fy2025: 1.13,   baseline_fy2025: 1.13  },
-    "Nebraska":       { total_fy2025: 2.63,   baseline_fy2025: 2.63  },
-    "Nevada":         { total_fy2025: 2.44,   baseline_fy2025: 2.44  },
-    "New Hampshire":  { total_fy2025: 1.42,   baseline_fy2025: 1.42  },
-    "New Jersey":     { total_fy2025: 41.06,  baseline_fy2025: 32.36 },
-    "New Mexico":     { total_fy2025: 1.69,   baseline_fy2025: 1.69  },
-    "New York":       { total_fy2025: 87.28,  baseline_fy2025: 82.78 },
-    "North Carolina": { total_fy2025: 12.41,  baseline_fy2025: 12.29 },
-    "North Dakota":   { total_fy2025: 1.31,   baseline_fy2025: 1.31  },
-    "Ohio":           { total_fy2025: 25.56,  baseline_fy2025: 25.56 },
-    "Oklahoma":       { total_fy2025: 4.35,   baseline_fy2025: 3.95  },
-    "Oregon":         { total_fy2025: 8.06,   baseline_fy2025: 2.18  },
-    "Pennsylvania":   { total_fy2025: 10.66,  baseline_fy2025: 10.66 },
-    "Rhode Island":   { total_fy2025: 2.40,   baseline_fy2025: 2.00  },
-    "South Carolina": { total_fy2025: 12.25,  baseline_fy2025: 12.05 },
-    "South Dakota":   { total_fy2025: 1.41,   baseline_fy2025: 1.41  },
-    "Tennessee":      { total_fy2025: 16.02,  baseline_fy2025: 15.72 },
-    "Texas":          { total_fy2025: 14.32,  baseline_fy2025: 14.32 },
-    "Utah":           { total_fy2025: 10.84,  baseline_fy2025: 10.84 },
-    "Vermont":        { total_fy2025: 0.97,   baseline_fy2025: 0.97  },
-    "Virginia":       { total_fy2025: 4.59,   baseline_fy2025: 4.59  },
-    "Washington":     { total_fy2025: 7.80,   baseline_fy2025: 7.80  },
-    "West Virginia":  { total_fy2025: 0.81,   baseline_fy2025: 0.81  },
-    "Wisconsin":      { total_fy2025: 1.08,   baseline_fy2025: 1.08  },
-    "Wyoming":        { total_fy2025: 1.08,   baseline_fy2025: 1.08  }
-  }
-};
-
-// ─── NASAA Rankings FY2025 ──────────────────────────────────────────────────
-// Source: NASAA FY2025 Report, Table 6 · Legislative Approp Incl. Line Items · rank of 50
-const NASAA_RANKS = {
-  states: {
-    "Alabama": 20, "Alaska": 25, "Arizona": 48, "Arkansas": 42,
-    "California": 32, "Colorado": 39, "Connecticut": 17, "Delaware": 4,
-    "Florida": 23, "Georgia": 50, "Hawaii": 1, "Idaho": 43,
-    "Illinois": 11, "Indiana": 35, "Iowa": 38, "Kansas": 41,
-    "Kentucky": 47, "Louisiana": 44, "Maine": 37, "Maryland": 5,
-    "Massachusetts": 8, "Michigan": 27, "Minnesota": 2, "Mississippi": 9,
-    "Missouri": 3, "Montana": 30, "Nebraska": 24, "Nevada": 36,
-    "New Hampshire": 29, "New Jersey": 7, "New Mexico": 34, "New York": 6,
-    "North Carolina": 26, "North Dakota": 19, "Ohio": 15, "Oklahoma": 28,
-    "Oregon": 16, "Pennsylvania": 33, "Rhode Island": 14, "South Carolina": 12,
-    "South Dakota": 21, "Tennessee": 13, "Texas": 46, "Utah": 10,
-    "Vermont": 22, "Virginia": 40, "Washington": 31, "West Virginia": 45,
-    "Wisconsin": 49, "Wyoming": 18
-  }
-};
-</script>
+<script src="/data/nasaa_data.js"></script>
+<script src="/data/bea_data.js"></script>
 </body>
 </html>
