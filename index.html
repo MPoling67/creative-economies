@@ -621,34 +621,20 @@ async function runScorecard() {
 }
 
 function buildPrompt(states) {
-  return `You are a creative economy analyst. Return data for ${states.join(', ')} using BEA ACPSA 2023 and NASAA FY2025 data.
-
-Known anchor data — use these exact figures where applicable:
-- New Mexico: creative_gdp="$5.6B", gdp_pct="4.0%", jobs="~43K", jobs_pct="5.5%", investment="$2.12/capita", roi="$1,244 per $1"
-- California: creative_gdp="$288.9B", gdp_pct="7.5%", jobs="821K", jobs_pct="4.3%", investment="$0.67/capita", roi="$107,000 per $1"
-- Washington: creative_gdp="$79B", gdp_pct="9.78%", jobs="190K", jobs_pct="5.0%", investment="$1.20/capita", roi="$10,800 per $1"
-- Minnesota: creative_gdp="$14.8B", gdp_pct="3.1%", jobs="94K", jobs_pct="3.2%", investment="$8.00/capita", roi="$329 per $1"
-- Arizona: creative_gdp="$15.8B", gdp_pct="4.4%", jobs="~115K", jobs_pct="3.8%", investment="$0.27/capita", roi="$7,900 per $1"
-
-For any other state, estimate based on BEA ACPSA 2023 patterns. Be conservative and accurate — do not inflate.
-
-Return ONLY valid JSON, no markdown:
-{
-  "states": [
-    {
-      "state": <name>,
-      "creative_gdp": <e.g. "$5.6B">,
-      "gdp_pct": <e.g. "4.0% of state GDP">,
-      "jobs": <e.g. "~43K">,
-      "jobs_pct": <e.g. "5.5% of workforce">,
-      "investment": <e.g. "$2.12/capita">,
-      "roi": <e.g. "$1,244 per $1">,
-      "note": <one sentence: the single most interesting or surprising thing about this state's creative economy data>
-    }
-  ],
-  "insight": "<1-2 sentences on the most interesting tension or contrast, or 1 sentence if single state. Be specific with real numbers.>"
-}`;
+  const stateList = states.join(', ');
+  const isSingle = states.length === 1;
+  return 'You are a creative economy analyst. Return data for ' + stateList + ' using BEA ACPSA 2023 and NASAA FY2025 data.\n\n'
+    + 'Known anchor data — use these exact figures where applicable:\n'
+    + '- New Mexico: creative_gdp="$5.6B", gdp_pct="4.0% of state GDP", jobs="~43K", jobs_pct="5.5% of workforce", investment="$2.12/capita", roi="$1,244 per $1"\n'
+    + '- California: creative_gdp="$288.9B", gdp_pct="7.5% of state GDP", jobs="821K", jobs_pct="4.3% of workforce", investment="$0.67/capita", roi="$107,000 per $1"\n'
+    + '- Washington: creative_gdp="$79B", gdp_pct="9.78% of state GDP", jobs="190K", jobs_pct="5.0% of workforce", investment="$1.20/capita", roi="$10,800 per $1"\n'
+    + '- Minnesota: creative_gdp="$14.8B", gdp_pct="3.1% of state GDP", jobs="94K", jobs_pct="3.2% of workforce", investment="$8.00/capita", roi="$329 per $1"\n'
+    + '- Arizona: creative_gdp="$15.8B", gdp_pct="4.4% of state GDP", jobs="~115K", jobs_pct="3.8% of workforce", investment="$0.27/capita", roi="$7,900 per $1"\n\n'
+    + 'For any other state, estimate conservatively from BEA ACPSA 2023 patterns. Do not inflate.\n\n'
+    + 'Return ONLY valid JSON. No markdown. Use this structure exactly: {"states":[{"state":"name","creative_gdp":"$XB","gdp_pct":"X% of state GDP","jobs":"~XK","jobs_pct":"X% of workforce","investment":"$X/capita","roi":"$X per $1","note":"one sentence"}],"insight":"one or two sentences"}';
 }
+
+
 
 function renderTable(d, zone) {
   const natCol = `<div class="tbl-col">
@@ -726,15 +712,10 @@ Key known anchors:
 For ${state}, estimate year-by-year values for 2019, 2020, 2021, 2022, 2023.
 2020 should generally show a pandemic dip. 2021-2022 recovery. 2023 near current known value.
 
-Return ONLY valid JSON, no markdown:
-{
-  "state": "${state}",
-  "years": [2019, 2020, 2021, 2022, 2023],
-  "creative_gdp_b": [<est $B for each year, e.g. 5.1, 4.6, 5.0, 5.3, 5.6>],
-  "investment_capita": [<est $/capita for each year>],
-  "gdp_pct": [<est % of state GDP for each year>],
-  "context": "<one sentence: the most significant event or shift in this state's creative economy 2019-2023>"
-}`;
+Return ONLY valid JSON with these exact keys, no markdown:
+state (string), years (array of 5 ints), creative_gdp_b (array of 5 numbers in billions), investment_capita (array of 5 numbers in dollars), gdp_pct (array of 5 numbers as percentages), context (one sentence string).
+Example years array: [2019,2020,2021,2022,2023]
+Example creative_gdp_b for NM: [5.1,4.6,5.0,5.3,5.6]`;
 
   try {
     const response = await fetch('/api/anthropic', {
@@ -838,9 +819,6 @@ function renderTrend(t, tzone) {
       <span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#1D9E75;display:inline-block;border-top:2px dashed #1D9E75;height:0"></span>Arts investment ($/capita)</span>`;
     tzone.querySelector('div').appendChild(legend);
   }, 100);
-}
-
-
 }
 
 
