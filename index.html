@@ -49,16 +49,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-mono);min-hei
 header{
   padding:1.2rem 2rem;
   border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;
+  display:flex;align-items:center;
 }
 header h1{font-family:var(--font-display);font-weight:300;font-size:1.4rem;letter-spacing:-0.02em}
 header h1 em{font-style:italic;color:var(--accent)}
-.tagline{font-size:0.6rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-top:2px}
-.header-right{font-size:0.65rem;color:var(--muted);text-align:right;line-height:1.8}
+.tagline{font-size:11px;color:var(--text);letter-spacing:0.08em;text-transform:uppercase;margin-top:3px}
 
 /* HERO */
 .hero{
-  padding:3.5rem 2rem 2.5rem;
+  padding:2.5rem 2rem 2rem;
   max-width:860px;margin:0 auto;text-align:center;
 }
 .hero-eyebrow{
@@ -68,11 +67,11 @@ header h1 em{font-style:italic;color:var(--accent)}
 .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);display:inline-block;animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.2}}
 .hero h2{
-  font-family:var(--font-display);font-weight:300;font-size:clamp(2rem,5vw,3.2rem);
-  line-height:1.2;letter-spacing:-0.03em;margin-bottom:1.2rem;
+  font-family:var(--font-display);font-weight:300;font-size:32px;
+  line-height:1.25;letter-spacing:-0.03em;margin-bottom:1.2rem;
 }
 .hero h2 em{font-style:italic;color:var(--accent)}
-.hero-sub{font-size:0.8rem;color:var(--muted);line-height:1.8;max-width:520px;margin:0 auto}
+.hero-sub{font-size:0.8rem;color:var(--text);line-height:1.8;max-width:520px;margin:0 auto}
 
 /* STAT BOXES */
 .stats{
@@ -85,7 +84,7 @@ header h1 em{font-style:italic;color:var(--accent)}
   display:grid;grid-template-columns:repeat(3,1fr);
 }
 .stat-box{
-  padding:1.6rem 1.5rem 1.4rem;
+  padding:1rem 1.25rem 1rem;
   border-right:1px solid var(--border);
   display:flex;flex-direction:column;
   animation:fadeUp 0.5s ease both;
@@ -94,7 +93,7 @@ header h1 em{font-style:italic;color:var(--accent)}
 .stat-box:nth-child(1){animation-delay:.05s}
 .stat-box:nth-child(2){animation-delay:.12s}
 .stat-box:nth-child(3){animation-delay:.19s}
-.stat-svg{width:100%;height:72px;margin-bottom:1rem}
+.stat-svg{width:100%;height:48px;margin-bottom:0.75rem}
 .stat-svg svg{width:100%;height:100%}
 .stat-num{
   font-size:2.2rem;font-weight:300;color:var(--accent);
@@ -113,11 +112,11 @@ header h1 em{font-style:italic;color:var(--accent)}
   text-align:center;margin-bottom:1.8rem;
 }
 .selector-head h3{
-  font-family:var(--font-display);font-weight:300;font-size:1.4rem;
+  font-family:var(--font-display);font-weight:300;font-size:32px;
   letter-spacing:-0.02em;margin-bottom:6px;
 }
 .selector-head h3 em{font-style:italic;color:var(--accent)}
-.selector-head p{font-size:0.72rem;color:var(--muted);line-height:1.7}
+.selector-head p{font-size:0.72rem;color:var(--text);line-height:1.7}
 
 .selectors{display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem}
 
@@ -184,7 +183,6 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 .btn-run:hover{opacity:0.88}
 .btn-run:active{transform:scale(0.97)}
 .btn-run:disabled{opacity:0.4;cursor:not-allowed}
-.run-note{font-size:0.62rem;color:var(--muted);margin-top:8px}
 
 /* DIVIDER */
 .section-divider{
@@ -333,11 +331,15 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 
 /* PAGE FOOTER */
 .page-footer{
-  padding:1.2rem 2rem;border-top:1px solid var(--border);
-  font-size:0.68rem;color:var(--muted);line-height:1.8;
-  display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  padding:1.2rem 2rem;
+  border-top:1px solid var(--border);
+  font-family:var(--font-mono);
+  font-size:12px;
+  color:var(--text);
+  line-height:1.8;
 }
 .page-footer a{color:var(--accent);text-decoration:none}
+.page-footer a:hover{text-decoration:underline}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
@@ -357,17 +359,12 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
     <h1>Creative Economies <em>Scorecard</em></h1>
     <div class="tagline">Knowledge on Tap · Monica Poling</div>
   </div>
-  <div class="header-right">
-    BEA/NASAA ACPSA · 2023<br>
-    50 states · AI-powered analysis
-  </div>
 </header>
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-eyebrow"><span class="dot"></span>National intelligence · updated 2025</div>
-  <h2>What is your state's creative economy <em>really</em> worth?</h2>
-  <p class="hero-sub">Every state generates significant economic value from arts and culture. Most have no idea how much — or how little they invest in return. Pick up to five states and find out.</p>
+  <div class="hero-eyebrow"><span class="dot"></span>National · updated 2025</div>
+  <h2>Economic Impact of <em>Creative Economies</em></h2>
 </div>
 
 <!-- STAT BOXES -->
@@ -451,8 +448,8 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 <!-- STATE SELECTOR -->
 <div class="selector-zone">
   <div class="selector-head">
-    <h3>Score your <em>state</em></h3>
-    <p>Select one state to score it. Add up to four more to compare. The AI does the rest.</p>
+    <h3>Score Your <em>State</em></h3>
+    <p>Select your state to get your score. Or select up to five states total to compare. <em>Note: The AI can take a minute to create a score.</em></p>
   </div>
 
   <div class="selectors" id="selectors">
@@ -488,7 +485,6 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 
   <div class="run-wrap">
     <button class="btn-run" id="run-btn" onclick="runScorecard()">Score these states →</button>
-    <div class="run-note">Powered by Claude AI · grounded in BEA/NASAA federal data</div>
   </div>
 </div>
 
@@ -499,12 +495,8 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 
 <!-- PAGE FOOTER -->
 <div class="page-footer">
-  <div>
-    Sources: <a href="https://www.bea.gov" target="_blank">BEA</a> Arts & Cultural Production Satellite Account 2023 ·
-    <a href="https://nasaa-arts.org" target="_blank">NASAA</a> FY2025 State Arts Agency Revenues ·
-    NEA State Profiles
-  </div>
-  <div>Knowledge on Tap · <a href="https://monicapoling.com" target="_blank">monicapoling.com</a> · Monica Poling</div>
+  <p>Creative Economies Scorecard is an AI-powered tool from Knowledge on Tap</p>
+  <p>Knowledge on Tap | <a href="https://monicapoling.com" target="_blank">Monica Poling</a></p>
 </div>
 
 <script>
@@ -609,18 +601,12 @@ async function runScorecard() {
       })
     });
 
-   const data = await response.json();
-console.log('API response:', JSON.stringify(data));
-if (!data.content) {
-  zone.innerHTML = `<div style="padding:2rem"><div class="error-state">API error: ${JSON.stringify(data)}</div></div>`;
-  btn.disabled = false;
-  btn.textContent = 'Score these states →';
-  return;
-}
-const text = data.content
-  .filter(b => b.type === 'text')
-  .map(b => b.text)
-  .join('');
+    const data = await response.json();
+    const text = data.content
+      .filter(b => b.type === 'text')
+      .map(b => b.text)
+      .join('');
+
     let parsed;
     try {
       const clean = text.replace(/```json|```/g, '').trim();
