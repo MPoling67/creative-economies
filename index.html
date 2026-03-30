@@ -32,6 +32,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,300&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="/data/bea_data.js"></script>
+<script src="/data/nasaa_data.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -482,6 +484,47 @@ const STATES = [
   'Virginia','Washington','West Virginia','Wisconsin','Wyoming'
 ];
 
+// ─── Real-data helper ────────────────────────────────────────────────────────
+function getStateData(state) {
+  const bea  = (BEA_DATA.states[state]   || {});
+  const nas  = (NASAA_DATA.states[state] || {});
+  const tot  = (NASAA_TOTALS.states[state] || {});
+  const rank = (NASAA_RANKS.states[state] || null);
+
+  const inv_fy2025 = (nas.years
+    ? nas[nas.length - 1]           // fallback
+    : NASAA_DATA.states[state]
+      ? NASAA_DATA.states[state][NASAA_DATA.states[state].length - 1]
+      : null) || null;
+
+  // Latest per-capita investment = last entry in NASAA_DATA for this state
+  const stateNasaaArr = NASAA_DATA.states[state] || [];
+  const perCapita_fy2025 = stateNasaaArr[stateNasaaArr.length - 1] ?? null;
+  const perCapita_fy2023 = stateNasaaArr[1] ?? null;
+
+  const natBea = BEA_DATA.national;
+
+  return {
+    // BEA 2023
+    gdp_b:       bea.gdp_b    ?? null,   // creative GDP, billions
+    gdp_pct:     bea.gdp_pct  ?? null,   // % of state GDP
+    jobs:        bea.jobs      ?? null,   // total creative jobs
+    jobs_pct:    bea.jobs_pct  ?? null,   // % of workforce
+    // NASAA FY2025
+    inv_total:   tot.total_fy2025    ?? null,  // total approp, millions
+    inv_baseline:tot.baseline_fy2025 ?? null,  // baseline (excl line items), millions
+    inv_percap:  perCapita_fy2025,             // $/capita FY2025
+    inv_percap_fy2023: perCapita_fy2023,       // $/capita FY2023 (for trend)
+    nasaa_rank:  rank,                         // rank out of 50
+    // National benchmarks
+    nat_gdp_b:   natBea.gdp_b,
+    nat_gdp_pct: natBea.gdp_pct,
+    nat_jobs:    natBea.jobs,
+    nat_jobs_pct:natBea.jobs_pct,
+    nat_percap:  NASAA_DATA.national[NASAA_DATA.national.length - 1], // FY2025 national avg
+  };
+}
+
 let selectorCount = 1;
 const MAX_SELECTORS = 5;
 
@@ -602,9 +645,29 @@ async function runScorecard() {
 }
 
 function buildSinglePrompt(state) {
-  return `You are a creative economy analyst. Score ${state}'s creative economy using the most current available data from BEA Arts and Cultural Production Satellite Account (ACPSA), NASAA state arts agency revenue reports, and NEA state profiles.
+  const d = getStateData(state);
+  const roi = (d.gdp_b && d.inv_total)
+    ? Math.round((d.gdp_b * 1e9) / (d.inv_total * 1e6)).toLocaleString()
+    : null;
 
-Use web search to find the most current figures for ${state}.
+  return `You are a creative economy analyst. Score ${state}'s creative economy using ONLY the verified data below — do NOT use web search to find different numbers. Your job is to write narrative and derive scores from these facts, not to look up new data.
+
+VERIFIED DATA FOR ${state.toUpperCase()} — BEA ACPSA 2023 & NASAA FY2025:
+
+Creative Economy (BEA ACPSA 2023):
+- Creative GDP: $${d.gdp_b}B (national: $${d.nat_gdp_b}B)
+- Creative GDP as % of state GDP: ${d.gdp_pct}% (national avg: ${d.nat_gdp_pct}%)
+- Total creative jobs: ${d.jobs ? d.jobs.toLocaleString() : 'N/A'} (national: ${d.nat_jobs ? d.nat_jobs.toLocaleString() : 'N/A'})
+- Creative jobs as % of workforce: ${d.jobs_pct}% (national avg: ${d.nat_jobs_pct}%)
+
+State Arts Investment (NASAA FY2025):
+- Per capita investment: $${d.inv_percap}/capita (national avg: $${d.nat_percap}/capita)
+- Total state arts appropriation: $${d.inv_total}M
+- Rank among 50 states: #${d.nasaa_rank}
+- FY2023 per capita (for trend): $${d.inv_percap_fy2023}/capita
+${roi ? `- Return ratio: $${roi} creative GDP per $1 of public arts investment` : ''}
+
+Score ${state} across three dimensions (0–100 each), where 50 = at national average, 100 = top performer, 0 = far below average. Use the numbers above as your anchor — don't inflate or deflate. Derive the overall score as a weighted average (employment 35%, gdp 40%, pipeline 25%).
 
 Return ONLY a valid JSON object, no markdown, no preamble:
 
@@ -615,24 +678,47 @@ Return ONLY a valid JSON object, no markdown, no preamble:
   "archetype": <"Model" | "Leading" | "Developing" | "Paradox" | "At risk">,
   "archetype_class": <"arch-model" | "arch-leading" | "arch-developing" | "arch-paradox" | "arch-atrisk">,
   "archetype_desc": <one sentence explaining what the archetype means for this state>,
-  "rank": <estimated rank out of 50>,
+  "rank": ${d.nasaa_rank || '<estimated rank out of 50>'},
   "dims": {
-    "employment": { "score": <0-100>, "label": "Arts & cultural employment", "note": <one sentence with specific data point and source> },
-    "gdp": { "score": <0-100>, "label": "Creative industry GDP share", "note": <one sentence with specific data point and source> },
-    "pipeline": { "score": <0-100>, "label": "Education & pipeline", "note": <one sentence, flag as estimated if so> }
+    "employment": { "score": <0-100>, "label": "Arts & cultural employment", "note": <one sentence referencing the ${d.jobs ? d.jobs.toLocaleString() : ''} jobs and ${d.jobs_pct}% workforce share> },
+    "gdp": { "score": <0-100>, "label": "Creative industry GDP share", "note": <one sentence referencing the $${d.gdp_b}B / ${d.gdp_pct}% vs national ${d.nat_gdp_pct}%> },
+    "pipeline": { "score": <0-100>, "label": "Education & pipeline", "note": <one sentence; this is estimated from state arts investment trend and your knowledge — flag as estimated> }
   },
-  "narrative": <2-3 sentences: the specific story of this state's creative economy — what's working, what's lagging, what the data reveals. Name specific programs, institutions, or policies where relevant.>,
-  "investment": <per capita arts investment as a dollar figure string, e.g. "$2.12/capita">,
-  "creative_gdp": <creative GDP as a string, e.g. "$5.6B">,
-  "roi": <creative GDP per $1 of public investment, e.g. "$1,244">,
-  "sources": <comma-separated list of 2-3 specific sources used>
+  "narrative": <2-3 sentences: the specific story of this state's creative economy using the numbers above — what's working, what's lagging, what the data reveals. Name specific programs or industries where relevant.>,
+  "investment": "$${d.inv_percap}/capita",
+  "creative_gdp": "$${d.gdp_b}B",
+  "roi": "${roi ? '$' + roi : '<creative GDP per $1 invested>'}",
+  "sources": "BEA ACPSA 2023, NASAA FY2025 State Arts Agency Revenues Report"
 }`;
 }
 
 function buildComparePrompt(states) {
-  return `You are a creative economy analyst. Score and compare the creative economies of: ${states.join(', ')}.
+  const stateBlocks = states.map(state => {
+    const d = getStateData(state);
+    const roi = (d.gdp_b && d.inv_total)
+      ? Math.round((d.gdp_b * 1e9) / (d.inv_total * 1e6)).toLocaleString()
+      : null;
+    return `${state.toUpperCase()}:
+  Creative GDP: $${d.gdp_b}B (${d.gdp_pct}% of state GDP)
+  Creative jobs: ${d.jobs ? d.jobs.toLocaleString() : 'N/A'} (${d.jobs_pct}% of workforce)
+  NASAA per capita FY2025: $${d.inv_percap} (rank #${d.nasaa_rank}/50)
+  Total arts approp FY2025: $${d.inv_total}M
+  ROI: ${roi ? '$' + roi + ' GDP per $1 invested' : 'N/A'}`;
+  }).join('\n\n');
 
-Use web search to ground your analysis in current BEA ACPSA, NASAA, and NEA data for each state.
+  return `You are a creative economy analyst. Compare the creative economies of: ${states.join(', ')}.
+
+Use ONLY the verified data below — do NOT look up different numbers. Your job is to write narrative and derive scores from these facts.
+
+NATIONAL BENCHMARKS (BEA ACPSA 2023 · NASAA FY2025):
+  Creative GDP: $${BEA_DATA.national.gdp_b}B (${BEA_DATA.national.gdp_pct}% of U.S. GDP)
+  Creative jobs: ${BEA_DATA.national.jobs.toLocaleString()} (${BEA_DATA.national.jobs_pct}% of workforce)
+  National avg per capita arts investment: $${NASAA_DATA.national[NASAA_DATA.national.length - 1]}/capita
+
+VERIFIED STATE DATA:
+${stateBlocks}
+
+Score each state (0–100 per dimension, 50 = at national average). Derive overall as weighted avg: employment 35%, gdp 40%, pipeline 25%.
 
 Return ONLY a valid JSON object, no markdown, no preamble:
 
@@ -645,18 +731,18 @@ Return ONLY a valid JSON object, no markdown, no preamble:
       "archetype": <"Model" | "Leading" | "Developing" | "Paradox" | "At risk">,
       "archetype_class": <"arch-model" | "arch-leading" | "arch-developing" | "arch-paradox" | "arch-atrisk">,
       "dims": {
-        "employment": { "score": <0-100>, "note": <specific data, one sentence> },
-        "gdp": { "score": <0-100>, "note": <specific data, one sentence> },
-        "pipeline": { "score": <0-100>, "note": <one sentence, flag as estimated if so> }
+        "employment": { "score": <0-100>, "note": <one sentence with the actual job count and % from verified data> },
+        "gdp": { "score": <0-100>, "note": <one sentence with actual GDP figures from verified data> },
+        "pipeline": { "score": <0-100>, "note": <one sentence, estimated from arts investment trend — flag as estimated> }
       },
-      "narrative": <2 sentences: what's distinctive about this state's creative economy>,
-      "investment": <per capita arts investment string>,
-      "creative_gdp": <creative GDP string>,
-      "roi": <return per $1 invested string>
+      "narrative": <2 sentences: what's distinctive using the numbers above>,
+      "investment": <"$X.XX/capita" — use verified NASAA FY2025 figure>,
+      "creative_gdp": <"$X.XXB" — use verified BEA figure>,
+      "roi": <"$X,XXX" — use verified ROI or "N/A">
     }
   ],
-  "insight": <2-3 sentences synthesizing the most interesting pattern, contrast, or finding across all the states compared. Be specific — name numbers, name the states.>,
-  "sources": <comma-separated list of sources used>
+  "insight": <2-3 sentences synthesizing the most interesting pattern across the states — be specific with numbers and state names>,
+  "sources": "BEA ACPSA 2023, NASAA FY2025 State Arts Agency Revenues Report"
 }`;
 }
 
@@ -733,6 +819,13 @@ function renderSingle(d, zone) {
 }
 
 function renderCompare(d, zone) {
+  // Pre-compute real numeric values for bar scaling
+  // gdp_b max across compared states for relative bar width
+  const stateNames = d.states.map(s => s.state);
+  const maxGdp  = Math.max(...stateNames.map(n => (BEA_DATA.states[n]||{}).gdp_b  || 0));
+  const maxJobs = Math.max(...stateNames.map(n => (BEA_DATA.states[n]||{}).jobs   || 0));
+  const maxInv  = Math.max(...stateNames.map(n => (NASAA_DATA.states[n]||[]).slice(-1)[0] || 0));
+
   const cols = d.states.length <= 2 ? d.states.length : Math.min(d.states.length, 3);
   const cards = d.states.map(s => {
     const nameParts = s.state.split(' ');
@@ -740,6 +833,23 @@ function renderCompare(d, zone) {
     const first = nameParts.join(' ');
     const nameHtml = (first ? first + ' ' : '') + '<em>' + last + '</em>';
     const sc = s.score_color || '#be3650';
+
+    // Pull real numeric fields for the three metric bars
+    const realBea  = BEA_DATA.states[s.state]  || {};
+    const realNas  = NASAA_DATA.states[s.state] || [];
+    const gdpReal   = realBea.gdp_b  || 0;
+    const jobsReal  = realBea.jobs   || 0;
+    const invReal   = realNas.slice(-1)[0] || 0;
+
+    const gdpPct  = maxGdp  ? Math.round((gdpReal  / maxGdp)  * 100) : 0;
+    const jobsPct = maxJobs ? Math.round((jobsReal / maxJobs) * 100) : 0;
+    const invPct  = maxInv  ? Math.round((invReal  / maxInv)  * 100) : 0;
+
+    // Bar color: semantic (amber/green/red) per design system note — NOT crimson-only
+    function barColor(pct) {
+      return pct >= 70 ? '#1D9E75' : pct >= 40 ? '#d4b800' : '#be3650';
+    }
+
     return `
       <div class="compare-card">
         <div class="cc-top">
@@ -747,14 +857,21 @@ function renderCompare(d, zone) {
           <div class="cc-score" style="color:${sc}">${s.overall_score}</div>
         </div>
         <div class="cc-dims">
-          ${['employment','gdp','pipeline'].map(k => {
-            const dim = s.dims[k];
-            return `<div class="cc-dim">
-              <span class="cc-dim-val" style="color:${sc}">${dim.score}</span>
-              <div class="cc-dim-bar"><div class="cc-dim-fill" style="width:${dim.score}%;background:${sc}"></div></div>
-              ${k}
-            </div>`;
-          }).join('')}
+          <div class="cc-dim">
+            <span class="cc-dim-val" style="color:${barColor(jobsPct)}">${jobsReal ? jobsReal.toLocaleString() : s.dims.employment.score}</span>
+            <div class="cc-dim-bar"><div class="cc-dim-fill" style="width:${jobsPct}%;background:${barColor(jobsPct)}"></div></div>
+            employment
+          </div>
+          <div class="cc-dim">
+            <span class="cc-dim-val" style="color:${barColor(gdpPct)}">$${gdpReal}B</span>
+            <div class="cc-dim-bar"><div class="cc-dim-fill" style="width:${gdpPct}%;background:${barColor(gdpPct)}"></div></div>
+            creative GDP
+          </div>
+          <div class="cc-dim">
+            <span class="cc-dim-val" style="color:${barColor(invPct)}">$${invReal}/cap</span>
+            <div class="cc-dim-bar"><div class="cc-dim-fill" style="width:${invPct}%;background:${barColor(invPct)}"></div></div>
+            investment
+          </div>
         </div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0">
           <div style="font-size:0.6rem;color:var(--muted)">GDP<br><span style="color:${sc};font-size:0.8rem">${s.creative_gdp}</span></div>
