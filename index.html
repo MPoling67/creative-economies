@@ -52,7 +52,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-we
 /* HEADER */
 /* NAV — v4 spec */
 .kot-nav{width:100%;background:#111110;padding:1.75rem clamp(16px,4vw,2rem) 1.25rem;border-bottom:none;}
-.kot-nav-inner{display:flex;align-items:center;gap:12px;max-width:860px;margin:0 auto;}
+.kot-nav-inner{display:flex;flex-direction:column;gap:8px;max-width:860px;margin:0 auto;}
 .kot-nav-title{font-family:var(--font-display);font-size:24px;color:#f0ede8;line-height:1.1;}
 .kot-nav-title strong{font-weight:700;color:#f0ede8;}
 .kot-nav-title em{font-weight:300;font-style:italic;color:#be3650;}
@@ -102,7 +102,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-we
   text-align:center;margin-bottom:1.8rem;
 }
 .selector-head h3{
-  font-family:var(--font-display);font-weight:300;font-size:1.4rem;
+  font-family:var(--font-display);font-weight:300;font-size:24px;
   letter-spacing:-0.02em;margin-bottom:6px;
 }
 .selector-head h3 em{font-style:italic;color:var(--accent)}
@@ -155,7 +155,7 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
   background:none;border:1px dashed var(--border2);
   color:var(--muted);font-family:var(--font-body);font-size:0.72rem;
   padding:9px 16px;border-radius:10px;cursor:pointer;
-  width:100%;text-align:center;
+  width:calc(100% - 52px);text-align:center;
   transition:color 0.15s,border-color 0.15s;
   margin-left:26px;
 }
@@ -165,7 +165,7 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 /* RUN BUTTON */
 .run-wrap{text-align:center;margin-top:1.2rem}
 .btn-run{
-  background:var(--accent);color:#fff;border:none;
+  background:#861442;color:#fff;border:none;
   font-family:var(--font-body);font-size:0.82rem;font-weight:500;
   padding:13px 36px;border-radius:10px;cursor:pointer;
   letter-spacing:0.04em;transition:opacity 0.15s,transform 0.1s;
@@ -322,11 +322,32 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 
 /* PAGE FOOTER */
 .page-footer{
-  padding:1.2rem 2rem;border-top:1px solid var(--border);
-  font-size:0.62rem;color:var(--muted);line-height:1.8;
-  display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  background:#111110;border-top:1px solid rgba(255,255,255,0.06);
+  padding:1.5rem clamp(16px,4vw,2rem);
+  display:flex;justify-content:space-between;align-items:flex-start;
+  flex-wrap:wrap;gap:1.5rem;
 }
-.page-footer a{color:var(--accent);text-decoration:none}
+.footer-left{font-family:var(--font-body);font-size:12px;font-weight:400;color:#f0ede8;line-height:1.8;flex:1;min-width:200px;}
+.footer-left a{color:#be3650;text-decoration:none;}
+.footer-left a:hover{color:#f0ede8;}
+.footer-right{display:flex;flex-direction:column;gap:8px;width:280px;flex-shrink:0;}
+.footer-right p{font-family:var(--font-body);font-size:13px;font-weight:500;color:#f0ede8;margin-bottom:2px;}
+.footer-email-row{display:flex;gap:8px;}
+.footer-email-input{
+  flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);
+  color:#f0ede8;font-family:var(--font-body);font-size:13px;font-weight:300;
+  padding:8px 12px;border-radius:8px;outline:none;
+}
+.footer-email-input::placeholder{color:#8a8a84;}
+.footer-email-input:focus{border-color:#be3650;}
+.footer-email-btn{
+  background:#861442;color:#fff;border:none;
+  font-family:var(--font-body);font-size:13px;font-weight:500;
+  padding:8px 16px;border-radius:8px;cursor:pointer;white-space:nowrap;
+  transition:opacity 0.15s;
+}
+.footer-email-btn:hover{opacity:0.85;}
+.footer-disclaimer{font-family:var(--font-body);font-size:11px;color:#f0ede8;opacity:0.5;line-height:1.6;}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
@@ -351,11 +372,9 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
         <path d="M50,72 L36,28 Q50,18 64,28 Z" fill="#861442" opacity="0.2" transform="rotate(18,50,72)"/>
         <circle cx="50" cy="72" r="8" fill="#861442"/>
       </svg>
-      <div>
-        <div class="kot-nav-title"><strong>Creative Economy</strong> <em>Scorecard</em></div>
-        <div class="kot-nav-sub">The creative economy employs 50M+ people and grows at 2× the U.S. growth rate. Measure your state against the national average.</div>
-      </div>
+      <div class="kot-nav-title"><strong>Creative Economy</strong> <em>Scorecard</em></div>
     </div>
+    <div class="kot-nav-sub">The creative economy employs 50M+ people and grows at 2× the U.S. growth rate. Measure your state against the national average.</div>
   </div>
 </nav>
 
@@ -366,17 +385,17 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 <div class="kot-dim-bar">
   <div class="kot-dim-col">
     <div class="kot-dim-val">$1.2T</div>
-    <div class="kot-dim-label">Creative Economy Output</div>
+    <div class="kot-dim-label">Economic Impact (2023)</div>
   </div>
   <div class="kot-dim-pipe"></div>
   <div class="kot-dim-col">
     <div class="kot-dim-val">0.049%</div>
-    <div class="kot-dim-label">Avg State Arts Budget Share</div>
+    <div class="kot-dim-label">Arts Funding: % of State Budget (Avg)</div>
   </div>
   <div class="kot-dim-pipe"></div>
   <div class="kot-dim-col">
-    <div class="kot-dim-val">$36.8B</div>
-    <div class="kot-dim-label">US Arts Trade Surplus</div>
+    <div class="kot-dim-val">4.2%</div>
+    <div class="kot-dim-label">of U.S. GDP — 2023</div>
   </div>
 </div>
 <div class="kot-crimson-rule"></div>
@@ -384,8 +403,8 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 <!-- STATE SELECTOR -->
 <div class="selector-zone">
   <div class="selector-head">
-    <h3>Score your <em>state</em></h3>
-    <p>Select one state to score it. Add up to four more to compare. The AI does the rest.</p>
+    <h3>Score Your <em>State</em></h3>
+    <p>Select up to four states to compare them to the national average.</p>
   </div>
 
   <div class="selectors" id="selectors">
@@ -420,8 +439,8 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
   <button class="add-state-btn" id="add-btn" onclick="addSelector()">+ add another state to compare</button>
 
   <div class="run-wrap">
-    <button class="btn-run" id="run-btn" onclick="runScorecard()">Score these states →</button>
-    <div class="run-note">Powered by Claude AI · grounded in BEA/NASAA federal data</div>
+    <button class="btn-run" id="run-btn" onclick="runScorecard()">Score These States →</button>
+    
   </div>
 </div>
 
@@ -432,12 +451,23 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 
 <!-- PAGE FOOTER -->
 <div class="page-footer">
-  <div>
-    Sources: <a href="https://www.bea.gov" target="_blank">BEA</a> Arts & Cultural Production Satellite Account 2023 ·
-    <a href="https://nasaa-arts.org" target="_blank">NASAA</a> FY2025 State Arts Agency Revenues ·
-    NEA State Profiles
+  <div class="footer-left">
+    © 2026 Creative Economy Scorecard | Monica Poling<br>
+    <a href="https://monicapoling.com" target="_blank">Knowledge on Tap</a><br>
+    <span style="font-size:11px;color:#8a8a84;">
+      Sources: <a href="https://www.bea.gov/news/2025/arts-and-cultural-production-satellite-account-us-and-states-2023" target="_blank" style="color:#be3650;">BEA/ACPSA 2023</a> ·
+      <a href="https://nasaa-arts.org/nasaa_research/creative-economy-state-profiles/" target="_blank" style="color:#be3650;">NASAA</a> FY2025 ·
+      NEA State Profiles
+    </span>
   </div>
-  <div>Knowledge on Tap · <a href="https://monicapoling.com" target="_blank">monicapoling.com</a> · Monica Poling</div>
+  <div class="footer-right">
+    <p>Want more mini apps?</p>
+    <div class="footer-email-row">
+      <input class="footer-email-input" id="footer-email" type="email" placeholder="your@email.com">
+      <button class="footer-email-btn" onclick="submitFooterEmail()">Subscribe Now</button>
+    </div>
+    <div class="footer-disclaimer">Get weekly tips on using AI to build mini apps. Unsubscribe any time.</div>
+  </div>
 </div>
 
 <script>
@@ -568,7 +598,7 @@ async function runScorecard() {
   }
 
   btn.disabled = false;
-  btn.textContent = 'Score these states →';
+  btn.textContent = 'Score These States →';
 }
 
 function buildSinglePrompt(state) {
@@ -757,6 +787,21 @@ function renderCompare(d, zone) {
       <div class="source-row">Sources: ${d.sources}</div>
     </div>
   `;
+}
+
+function submitFooterEmail() {
+  var email = document.getElementById('footer-email').value.trim();
+  if (!email || !email.includes('@')) { alert('Please enter a valid email.'); return; }
+  var now = new Date();
+  var humanTime = now.toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+  var LOGGER = 'https://script.google.com/macros/s/AKfycbxtCPP6q6wqCUYlSEtNdyQxFF_22K94lvgP4MJytXYX-kWqpCYkZnXG7tYV5fSZThYj/exec';
+  fetch(LOGGER, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ timestamp: humanTime, event: 'email_submit', app: 'Creative Economy Scorecard', url: window.location.href, score: '', firstName: '', email: email, subscribe: 'yes' })
+  }).catch(function() {});
+  document.querySelector('.footer-right').innerHTML = "<div style='font-size:13px;color:#be3650;padding:6px 0;'>You&#8217;re in! &#10003;</div>";
 }
 </script>
 </body>
