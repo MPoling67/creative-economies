@@ -25,7 +25,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-we
 /* HEADER */
 /* NAV — v4 spec */
 .kot-nav{width:100%;background:#111110;padding:1.75rem clamp(16px,4vw,2rem) 1.25rem;border-bottom:none;}
-.kot-nav-inner{display:flex;align-items:center;gap:12px;}
+.kot-nav-inner{display:flex;align-items:center;gap:12px;max-width:860px;margin:0 auto;}
 .kot-nav-title{font-family:var(--font-display);font-size:24px;color:#f0ede8;line-height:1.1;}
 .kot-nav-title strong{font-weight:700;color:#f0ede8;}
 .kot-nav-title em{font-weight:300;font-style:italic;color:#be3650;}
@@ -317,11 +317,11 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 <nav class="kot-nav">
   <div class="kot-nav-inner">
     <div style="display:flex;align-items:center;gap:12px;">
-      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 100 100" style="flex-shrink:0">
-        <path d="M50,90 L38,52 Q50,44 62,52 Z" fill="#861442" transform="rotate(-18,50,90)"/>
-        <path d="M50,90 L38,52 Q50,44 62,52 Z" fill="#be3650" transform="rotate(0,50,90)"/>
-        <path d="M50,90 L38,52 Q50,44 62,52 Z" fill="#861442" opacity="0.2" transform="rotate(18,50,90)"/>
-        <circle cx="50" cy="90" r="7" fill="#861442"/>
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 100 100" style="flex-shrink:0">
+        <path d="M50,72 L36,28 Q50,18 64,28 Z" fill="#861442" transform="rotate(-18,50,72)"/>
+        <path d="M50,72 L36,28 Q50,18 64,28 Z" fill="#be3650" transform="rotate(0,50,72)"/>
+        <path d="M50,72 L36,28 Q50,18 64,28 Z" fill="#861442" opacity="0.2" transform="rotate(18,50,72)"/>
+        <circle cx="50" cy="72" r="8" fill="#861442"/>
       </svg>
       <div>
         <div class="kot-nav-title"><strong>Creative Economies</strong> <em>Scorecard</em></div>
