@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Creative Economy Scorecard ⚡ — Free State Arts Data Tool | Mini Business Intelligence Tool</title>
-<meta name="description" content="The creative economy employs 50M+ people and grows at 2× the U.S. growth rate. ⚡ Measure your state against the national average.">
+<title>Creative Industries Scorecard ⚡ — Free State Arts Data Tool | Mini Business Intelligence Tool</title>
+<meta name="description" content="The creative industries employ 50M+ people and grows at 2× the U.S. growth rate. ⚡ Measure your state against the national average.">
 <meta name="author" content="Knowledge on Tap">
 <link rel="canonical" href="https://creative-economies.vercel.app">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://creative-economies.vercel.app">
-<meta property="og:title" content="Creative Economy Scorecard ⚡ — Free State Arts Data Tool | Mini Business Intelligence Tool">
-<meta property="og:description" content="The creative economy employs 50M+ people and grows at 2× the U.S. growth rate. ⚡ Measure your state against the national average.">
+<meta property="og:title" content="Creative Industries Scorecard ⚡ — Free State Arts Data Tool | Mini Business Intelligence Tool">
+<meta property="og:description" content="The creative industries employ 50M+ people and grows at 2× the U.S. growth rate. ⚡ Measure your state against the national average.">
 <meta property="og:site_name" content="Knowledge on Tap">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Creative Economy Scorecard ⚡ — Free State Arts Data Tool | Mini Business Intelligence Tool">
-<meta name="twitter:description" content="The creative economy employs 50M+ people and grows at 2× the U.S. growth rate. ⚡ Measure your state against the national average.">
+<meta name="twitter:title" content="Creative Industries Scorecard ⚡ — Free State Arts Data Tool | Mini Business Intelligence Tool">
+<meta name="twitter:description" content="The creative industries employ 50M+ people and grows at 2× the U.S. growth rate. ⚡ Measure your state against the national average.">
 <link rel="icon" type="image/svg+xml" href="/public/favicon.svg">
 <meta name="p:domain_verify" content="9921e493445e449a3a36e7bf152b8a2e">
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -118,9 +118,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-we
   display:flex;align-items:center;gap:10px;
 }
 .sel-num{
-  font-size:0.65rem;color:var(--muted);width:16px;flex-shrink:0;text-align:right;
+  font-size:0.65rem;color:#861442;width:16px;flex-shrink:0;text-align:right;font-weight:500;
 }
-.sel-num.required{color:var(--accent)}
+.sel-num.required{color:#861442;}
 
 select.state-pick{
   flex:1;
@@ -399,9 +399,9 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
         <path d="M50,72 L36,28 Q50,18 64,28 Z" fill="#861442" opacity="0.2" transform="rotate(18,50,72)"/>
         <circle cx="50" cy="72" r="8" fill="#861442"/>
       </svg>
-      <div class="kot-nav-title"><strong>Creative Economy</strong> <em>Scorecard</em></div>
+      <div class="kot-nav-title"><strong>Creative Industries</strong> <em>Scorecard</em></div>
     </div>
-    <div class="kot-nav-sub">The creative economy employs 50M+ people and grows at 2× the U.S. growth rate. Measure your state against the national average.</div>
+    <div class="kot-nav-sub">Creative industries employ 50M+ people and grow at 2× the U.S. growth rate. Measure your state against the national average.</div>
   </div>
 </nav>
 
@@ -480,7 +480,7 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 <div class="page-footer">
   <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.5rem;width:100%;">
     <div class="footer-left">
-      <div style="font-weight:500;">Creative Economy Scorecard</div>
+      <div style="font-weight:500;">Creative Industries Scorecard</div>
       <div>© 2026 Monica Poling &nbsp;|&nbsp; <a href="https://monicapoling.com/knowledge-on-tap" target="_blank">Knowledge on Tap</a></div>
       <span style="font-size:11px;color:#8a8a84;">
         Sources: <a href="https://www.bea.gov/news/2025/arts-and-cultural-production-satellite-account-us-and-states-2023" target="_blank">BEA/ACPSA 2023</a> ·
@@ -688,11 +688,11 @@ function buildSinglePrompt(state) {
     ? Math.round((d.gdp_b * 1e9) / (d.inv_total * 1e6)).toLocaleString()
     : null;
 
-  return `You are a creative economy analyst. Score ${state}'s creative economy using ONLY the verified data below — do NOT use web search to find different numbers. Your job is to write narrative and derive scores from these facts, not to look up new data.
+  return `You are a creative industries analyst. Score ${state}'s creative industries using ONLY the verified data below — do NOT use web search to find different numbers. Your job is to write narrative and derive scores from these facts, not to look up new data.
 
 VERIFIED DATA FOR ${state.toUpperCase()} — BEA ACPSA 2023 & NASAA FY2025:
 
-Creative Economy (BEA ACPSA 2023):
+Creative Industries (BEA ACPSA 2023):
 - Creative GDP: $${d.gdp_b}B (national: $${d.nat_gdp_b}B)
 - Creative GDP as % of state GDP: ${d.gdp_pct}% (national avg: ${d.nat_gdp_pct}%)
 - Total creative jobs: ${d.jobs ? d.jobs.toLocaleString() : 'N/A'} (national: ${d.nat_jobs ? d.nat_jobs.toLocaleString() : 'N/A'})
@@ -722,7 +722,7 @@ Return ONLY a valid JSON object, no markdown, no preamble:
     "gdp": { "score": <0-100>, "label": "Creative industry GDP share", "note": <one sentence referencing the $${d.gdp_b}B / ${d.gdp_pct}% vs national ${d.nat_gdp_pct}%> },
     "pipeline": { "score": <0-100>, "label": "Education & pipeline", "note": <one sentence; this is estimated from state arts investment trend and your knowledge — flag as estimated> }
   },
-  "narrative": <2-3 sentences: the specific story of this state's creative economy using the numbers above — what's working, what's lagging, what the data reveals. Name specific programs or industries where relevant.>,
+  "narrative": <2-3 sentences: the specific story of this state's creative industries using the numbers above — what's working, what's lagging, what the data reveals. Name specific programs or industries where relevant.>,
   "investment": "$${d.inv_percap}/capita",
   "creative_gdp": "$${d.gdp_b}B",
   "roi": "${roi ? '$' + roi : '<creative GDP per $1 invested>'}",
@@ -744,7 +744,7 @@ function buildComparePrompt(states) {
   ROI: ${roi ? '$' + roi + ' GDP per $1 invested' : 'N/A'}`;
   }).join('\n\n');
 
-  return `You are a creative economy analyst. Compare the creative economies of: ${states.join(', ')}.
+  return `You are a creative industries analyst. Compare the creative economies of: ${states.join(', ')}.
 
 Use ONLY the verified data below — do NOT look up different numbers. Your job is to write narrative and derive scores from these facts.
 
@@ -809,10 +809,6 @@ function renderSingle(d, zone) {
         <div>
           <div class="result-state-name">${nameHtml}</div>
           <div class="result-meta">Archetype: ${d.archetype} · rank ~${d.rank}/50 · BEA ACPSA 2023</div>
-        </div>
-        <div class="result-score-block">
-          <div class="result-score-num" style="color:${scoreColor}">${d.overall_score}</div>
-          <div class="result-score-sub">/ 100 overall</div>
         </div>
       </div>
 
@@ -915,10 +911,6 @@ function renderCompare(d, zone) {
     return `
       <div class="summary-card" style="border-top-color:${stateColor}">
         <div class="sc-name">${s.state}</div>
-        <div class="sc-score-row">
-          <div class="sc-score" style="color:${sc}">${s.overall_score}</div>
-          <div class="sc-score-sub">/ 100</div>
-        </div>
         <div class="sc-narrative">${s.narrative}</div>
       </div>`;
   }).join('');
@@ -983,7 +975,7 @@ function submitModalEmail() {
   fetch(LOGGER, {
     method: 'POST', mode: 'no-cors',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ timestamp: humanTime, event: 'modal_submit', app: 'Creative Economy Scorecard', url: window.location.href, score: '', firstName: firstName, email: email, subscribe: 'yes' })
+    body: JSON.stringify({ timestamp: humanTime, event: 'modal_submit', app: 'Creative Industries Scorecard', url: window.location.href, score: '', firstName: firstName, email: email, subscribe: 'yes' })
   }).catch(function() {});
   var box = document.querySelector('.modal-box');
   box.innerHTML = '<div class="modal-title">Subscribe <em>Now</em></div><div style="font-size:14px;color:#be3650;line-height:1.6;padding:8px 0;">Thank you! You\'ve been subscribed.<br>Check your email for a welcome message.</div><div onclick="closeSubscribeModal()" style="margin-top:1rem;font-size:13px;font-weight:500;color:#f0ede8;cursor:pointer;">Close</div>';
