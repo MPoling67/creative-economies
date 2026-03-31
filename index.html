@@ -386,7 +386,7 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 <body>
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PC2BG949" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
-<div style="max-width:860px;margin:0 auto;overflow:hidden;">
+<div style="max-width:860px;margin:0 auto;">
 
 <!-- NAV — v4 spec -->
 <nav class="kot-nav">
@@ -979,14 +979,14 @@ function submitModalEmail() {
   if (!email || !email.includes('@')) return;
   var now = new Date();
   var humanTime = now.toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
-  var LOGGER = 'https://script.google.com/macros/s/AKfycbxtCPP6q6wqCUYlSEtNdyQxFF_22K94lvgP4MJytXYX-kWqpCYkZnXG7tYV5fSZThYj/exec';
+  var LOGGER = 'https://script.google.com/macros/s/AKfycbwvztxaVKSDYhevhsjQ7LowAMvjBu4ONs2AqXytbNflmEJ_mfBF7mI54fgyhBZzhU8M/exec';
   fetch(LOGGER, {
     method: 'POST', mode: 'no-cors',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ timestamp: humanTime, event: 'modal_submit', app: 'Creative Economy Scorecard', url: window.location.href, score: '', firstName: firstName, email: email, subscribe: 'yes' })
   }).catch(function() {});
   var box = document.querySelector('.modal-box');
-  box.innerHTML = '<div class="modal-title">Subscribe <em>Now</em></div><div style="font-size:14px;color:#be3650;line-height:1.6;padding:8px 0;">Thank you! You\'ve been subscribed.<br>Check your email for a welcome message.</div><div class="modal-dismiss" onclick="closeSubscribeModal()">Close</div>';
+  box.innerHTML = '<div class="modal-title">Subscribe <em>Now</em></div><div style="font-size:14px;color:#be3650;line-height:1.6;padding:8px 0;">Thank you! You\'ve been subscribed.<br>Check your email for a welcome message.</div><div onclick="closeSubscribeModal()" style="margin-top:1rem;font-size:13px;font-weight:500;color:#f0ede8;cursor:pointer;">Close</div>';
 }
 </script>
 </div>
