@@ -54,7 +54,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-we
 /* HEADER */
 /* NAV — v4 spec */
 .kot-nav{width:100%;background:#111110;padding:1.75rem clamp(16px,4vw,2rem) 1.25rem;border-bottom:none;}
-.kot-nav-inner{display:flex;flex-direction:column;gap:8px;max-width:860px;margin:0 auto;}
+.kot-nav-inner{display:flex;flex-direction:column;gap:8px;}
 .kot-nav-title{font-family:var(--font-display);font-size:24px;color:#f0ede8;line-height:1.1;}
 .kot-nav-title strong{font-weight:700;color:#f0ede8;}
 .kot-nav-title em{font-weight:300;font-style:italic;color:#be3650;}
@@ -386,6 +386,8 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 <body>
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PC2BG949" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
+<div style="max-width:860px;margin:0 auto;overflow:hidden;">
+
 <!-- NAV — v4 spec -->
 <nav class="kot-nav">
   <div class="kot-nav-inner">
@@ -403,9 +405,7 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 </nav>
 
 <!-- HERO IMAGE -->
-<div class="kot-hero-image-wrap">
-  <div class="kot-hero-image"></div>
-</div>
+<div class="kot-hero-image"></div>
 
 <!-- DIMENSION BAR -->
 <div class="kot-dim-bar">
@@ -477,7 +477,7 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 
 <!-- PAGE FOOTER -->
 <div class="page-footer">
-  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.5rem;width:100%;max-width:860px;margin:0 auto;">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.5rem;width:100%;">
     <div class="footer-left">
       <div style="font-weight:500;">Creative Economy Scorecard</div>
       <div>© 2026 Monica Poling &nbsp;|&nbsp; <a href="https://monicapoling.com/knowledge-on-tap" target="_blank">Knowledge on Tap</a></div>
@@ -989,5 +989,6 @@ function submitModalEmail() {
   box.innerHTML = '<div class="modal-title">Subscribe <em>Now</em></div><div style="font-size:14px;color:#be3650;line-height:1.6;padding:8px 0;">Thank you! You\'ve been subscribed.<br>Check your email for a welcome message.</div><div class="modal-dismiss" onclick="closeSubscribeModal()">Close</div>';
 }
 </script>
+</div>
 </body>
 </html>
