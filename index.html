@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Creative Economy Scorecard ⚡ — Free State Arts Data Tool | Mini Business Intelligence Tool</title>
-<meta name="description" content="The creative economy employs 50M+ people and grows at 2× the U.S. growth rate. ⚡ Measure your state against the national average.">
+<title>Creative Industries Scorecard ⚡ — Free State Arts Data Tool | Mini Business Intelligence Tool</title>
+<meta name="description" content="The creative industries employ 50M+ people and grows at 2× the U.S. growth rate. ⚡ Measure your state against the national average.">
 <meta name="author" content="Knowledge on Tap">
 <link rel="canonical" href="https://creative-economies.vercel.app">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://creative-economies.vercel.app">
-<meta property="og:title" content="Creative Economy Scorecard ⚡ — Free State Arts Data Tool | Mini Business Intelligence Tool">
-<meta property="og:description" content="The creative economy employs 50M+ people and grows at 2× the U.S. growth rate. ⚡ Measure your state against the national average.">
+<meta property="og:title" content="Creative Industries Scorecard ⚡ — Free State Arts Data Tool | Mini Business Intelligence Tool">
+<meta property="og:description" content="The creative industries employ 50M+ people and grows at 2× the U.S. growth rate. ⚡ Measure your state against the national average.">
 <meta property="og:site_name" content="Knowledge on Tap">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Creative Economy Scorecard ⚡ — Free State Arts Data Tool | Mini Business Intelligence Tool">
-<meta name="twitter:description" content="The creative economy employs 50M+ people and grows at 2× the U.S. growth rate. ⚡ Measure your state against the national average.">
+<meta name="twitter:title" content="Creative Industries Scorecard ⚡ — Free State Arts Data Tool | Mini Business Intelligence Tool">
+<meta name="twitter:description" content="The creative industries employ 50M+ people and grows at 2× the U.S. growth rate. ⚡ Measure your state against the national average.">
 <link rel="icon" type="image/svg+xml" href="/public/favicon.svg">
 <meta name="p:domain_verify" content="9921e493445e449a3a36e7bf152b8a2e">
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -91,6 +91,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-we
 .kot-dim-label{
   font-family:var(--font-body);font-size:10px;font-weight:500;
   text-transform:uppercase;letter-spacing:0.12em;color:#f0ede8;opacity:0.7;
+  line-height:1.6;
 }
 .kot-dim-pipe{
   width:1px;height:28px;background:rgba(255,255,255,0.12);flex-shrink:0;
@@ -117,9 +118,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-we
   display:flex;align-items:center;gap:10px;
 }
 .sel-num{
-  font-size:0.65rem;color:var(--muted);width:16px;flex-shrink:0;text-align:right;
+  font-size:0.65rem;color:#861442;width:16px;flex-shrink:0;text-align:right;font-weight:500;
 }
-.sel-num.required{color:var(--accent)}
+.sel-num.required{color:#861442;}
 
 select.state-pick{
   flex:1;
@@ -285,7 +286,7 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 }
 .metric-card-label{
   font-family:var(--font-body);font-size:10px;font-weight:500;
-  text-transform:uppercase;letter-spacing:0.13em;color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.13em;color:#861442;
   margin-bottom:0.85rem;
 }
 .metric-row{display:flex;flex-direction:column;gap:10px}
@@ -398,9 +399,9 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
         <path d="M50,72 L36,28 Q50,18 64,28 Z" fill="#861442" opacity="0.2" transform="rotate(18,50,72)"/>
         <circle cx="50" cy="72" r="8" fill="#861442"/>
       </svg>
-      <div class="kot-nav-title"><strong>Creative Economy</strong> <em>Scorecard</em></div>
+      <div class="kot-nav-title"><strong>Creative Industries</strong> <em>Scorecard</em></div>
     </div>
-    <div class="kot-nav-sub">The creative economy employs 50M+ people and grows at 2× the U.S. growth rate. Measure your state against the national average.</div>
+    <div class="kot-nav-sub">Creative industries employ 50M+ people and grow at 2× the U.S. growth rate. Measure your state against the national average.</div>
   </div>
 </nav>
 
@@ -411,17 +412,17 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 <div class="kot-dim-bar">
   <div class="kot-dim-col">
     <div class="kot-dim-val">$1.2T</div>
-    <div class="kot-dim-label">Economic Impact (2023)</div>
+    <div class="kot-dim-label">Creative Industries<br>Total Economic Impact (2023)</div>
   </div>
   <div class="kot-dim-pipe"></div>
   <div class="kot-dim-col">
     <div class="kot-dim-val">0.049%</div>
-    <div class="kot-dim-label">Arts Funding: % of State Budget (Avg)</div>
+    <div class="kot-dim-label">Arts Funding<br>% of State Budget (Avg)</div>
   </div>
   <div class="kot-dim-pipe"></div>
   <div class="kot-dim-col">
     <div class="kot-dim-val">4.2%</div>
-    <div class="kot-dim-label">of U.S. GDP — 2023</div>
+    <div class="kot-dim-label">U.S. GDP (2023)</div>
   </div>
 </div>
 <div class="kot-crimson-rule"></div>
@@ -430,7 +431,7 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 <div class="selector-zone">
   <div class="selector-head">
     <h3>Score Your <em>State</em></h3>
-    <p>Select up to four states to compare them to the national average.</p>
+    <p>Select up to six states to compare them to the national average.</p>
   </div>
 
   <div class="selectors" id="selectors">
@@ -479,7 +480,7 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 <div class="page-footer">
   <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.5rem;width:100%;">
     <div class="footer-left">
-      <div style="font-weight:500;">Creative Economy Scorecard</div>
+      <div style="font-weight:500;">Creative Industries Scorecard</div>
       <div>© 2026 Monica Poling &nbsp;|&nbsp; <a href="https://monicapoling.com/knowledge-on-tap" target="_blank">Knowledge on Tap</a></div>
       <span style="font-size:11px;color:#8a8a84;">
         Sources: <a href="https://www.bea.gov/news/2025/arts-and-cultural-production-satellite-account-us-and-states-2023" target="_blank">BEA/ACPSA 2023</a> ·
@@ -563,7 +564,7 @@ function getStateData(state) {
 }
 
 let selectorCount = 1;
-const MAX_SELECTORS = 5;
+const MAX_SELECTORS = 6;
 
 function buildStateOptions(selectedVal) {
   return '<option value="">— optional —</option>' +
@@ -683,15 +684,12 @@ async function runScorecard() {
 
 function buildSinglePrompt(state) {
   const d = getStateData(state);
-  const roi = (d.gdp_b && d.inv_total)
-    ? Math.round((d.gdp_b * 1e9) / (d.inv_total * 1e6)).toLocaleString()
-    : null;
 
-  return `You are a creative economy analyst. Score ${state}'s creative economy using ONLY the verified data below — do NOT use web search to find different numbers. Your job is to write narrative and derive scores from these facts, not to look up new data.
+  return `You are a creative industries analyst. Score ${state}'s creative industries using ONLY the verified data below — do NOT use web search to find different numbers. Your job is to write narrative and derive scores from these facts, not to look up new data.
 
 VERIFIED DATA FOR ${state.toUpperCase()} — BEA ACPSA 2023 & NASAA FY2025:
 
-Creative Economy (BEA ACPSA 2023):
+Creative Industries (BEA ACPSA 2023):
 - Creative GDP: $${d.gdp_b}B (national: $${d.nat_gdp_b}B)
 - Creative GDP as % of state GDP: ${d.gdp_pct}% (national avg: ${d.nat_gdp_pct}%)
 - Total creative jobs: ${d.jobs ? d.jobs.toLocaleString() : 'N/A'} (national: ${d.nat_jobs ? d.nat_jobs.toLocaleString() : 'N/A'})
@@ -702,9 +700,10 @@ State Arts Investment (NASAA FY2025):
 - Total state arts appropriation: $${d.inv_total}M
 - Rank among 50 states: #${d.nasaa_rank}
 - FY2023 per capita (for trend): $${d.inv_percap_fy2023}/capita
-${roi ? `- Return ratio: $${roi} creative GDP per $1 of public arts investment` : ''}
 
 Score ${state} across three dimensions (0–100 each), where 50 = at national average, 100 = top performer, 0 = far below average. Use the numbers above as your anchor — don't inflate or deflate. Derive the overall score as a weighted average (employment 35%, gdp 40%, pipeline 25%).
+
+For the narrative: if the state is at or above the national average on any metric — especially creative jobs % or GDP % — despite below-average per capita investment, lead with that as a story of organic creative strength. Name the specific numbers. Otherwise lead with the most interesting data point for this state.
 
 Return ONLY a valid JSON object, no markdown, no preamble:
 
@@ -721,10 +720,9 @@ Return ONLY a valid JSON object, no markdown, no preamble:
     "gdp": { "score": <0-100>, "label": "Creative industry GDP share", "note": <one sentence referencing the $${d.gdp_b}B / ${d.gdp_pct}% vs national ${d.nat_gdp_pct}%> },
     "pipeline": { "score": <0-100>, "label": "Education & pipeline", "note": <one sentence; this is estimated from state arts investment trend and your knowledge — flag as estimated> }
   },
-  "narrative": <2-3 sentences: the specific story of this state's creative economy using the numbers above — what's working, what's lagging, what the data reveals. Name specific programs or industries where relevant.>,
+  "narrative": <2-3 sentences: lead with any metric where this state punches above its weight, then tell the specific story using the numbers above — what's working, what's lagging, what the data reveals. Name specific programs or industries where relevant.>,
   "investment": "$${d.inv_percap}/capita",
   "creative_gdp": "$${d.gdp_b}B",
-  "roi": "${roi ? '$' + roi : '<creative GDP per $1 invested>'}",
   "sources": "BEA ACPSA 2023, NASAA FY2025 State Arts Agency Revenues Report"
 }`;
 }
@@ -732,18 +730,14 @@ Return ONLY a valid JSON object, no markdown, no preamble:
 function buildComparePrompt(states) {
   const stateBlocks = states.map(state => {
     const d = getStateData(state);
-    const roi = (d.gdp_b && d.inv_total)
-      ? Math.round((d.gdp_b * 1e9) / (d.inv_total * 1e6)).toLocaleString()
-      : null;
     return `${state.toUpperCase()}:
   Creative GDP: $${d.gdp_b}B (${d.gdp_pct}% of state GDP)
   Creative jobs: ${d.jobs ? d.jobs.toLocaleString() : 'N/A'} (${d.jobs_pct}% of workforce)
   NASAA per capita FY2025: $${d.inv_percap} (rank #${d.nasaa_rank}/50)
-  Total arts approp FY2025: $${d.inv_total}M
-  ROI: ${roi ? '$' + roi + ' GDP per $1 invested' : 'N/A'}`;
+  Total arts approp FY2025: $${d.inv_total}M`;
   }).join('\n\n');
 
-  return `You are a creative economy analyst. Compare the creative economies of: ${states.join(', ')}.
+  return `You are a creative industries analyst. Compare the creative industries of: ${states.join(', ')}.
 
 Use ONLY the verified data below — do NOT look up different numbers. Your job is to write narrative and derive scores from these facts.
 
@@ -756,6 +750,8 @@ VERIFIED STATE DATA:
 ${stateBlocks}
 
 Score each state (0–100 per dimension, 50 = at national average). Derive overall as weighted avg: employment 35%, gdp 40%, pipeline 25%.
+
+For each state's narrative: if the state is at or above national average on any metric despite below-average per capita investment, lead with that as a story of organic creative strength. Name the specific numbers.
 
 Return ONLY a valid JSON object, no markdown, no preamble:
 
@@ -772,10 +768,9 @@ Return ONLY a valid JSON object, no markdown, no preamble:
         "gdp": { "score": <0-100>, "note": <one sentence with actual GDP figures from verified data> },
         "pipeline": { "score": <0-100>, "note": <one sentence, estimated from arts investment trend — flag as estimated> }
       },
-      "narrative": <2 sentences: what's distinctive using the numbers above>,
+      "narrative": <2 sentences: lead with any metric where this state punches above its weight, then what's distinctive using the numbers above>,
       "investment": <"$X.XX/capita" — use verified NASAA FY2025 figure>,
-      "creative_gdp": <"$X.XXB" — use verified BEA figure>,
-      "roi": <"$X,XXX" — use verified ROI or "N/A">
+      "creative_gdp": <"$X.XXB" — use verified BEA figure>
     }
   ],
   "insight": <2-3 sentences synthesizing the most interesting pattern across the states — be specific with numbers and state names>,
@@ -808,10 +803,6 @@ function renderSingle(d, zone) {
         <div>
           <div class="result-state-name">${nameHtml}</div>
           <div class="result-meta">Archetype: ${d.archetype} · rank ~${d.rank}/50 · BEA ACPSA 2023</div>
-        </div>
-        <div class="result-score-block">
-          <div class="result-score-num" style="color:${scoreColor}">${d.overall_score}</div>
-          <div class="result-score-sub">/ 100 overall</div>
         </div>
       </div>
 
@@ -867,21 +858,20 @@ function renderCompare(d, zone) {
     const bea = BEA_DATA.states[n] || {};
     const nas = NASAA_DATA.states[n] || [];
     const tot = (NASAA_TOTALS.states[n] || {});
-    const gdp_b    = bea.gdp_b  || 0;
+    const gdp_b      = bea.gdp_b    || 0;
     const inv_percap = nas.slice(-1)[0] || 0;
-    // ROI: creative GDP ($B → $) / total arts approp ($M → $)
-    const roi_num  = (gdp_b && tot.total_fy2025)
-      ? Math.round((gdp_b * 1e9) / (tot.total_fy2025 * 1e6))
-      : null;
-    return { name: n, gdp_b, inv_percap, roi_num, color: colorMap[n] };
+    const jobs       = bea.jobs     || 0;
+    const jobs_pct   = bea.jobs_pct || 0;
+    const inv_total  = tot.total_fy2025 || 0;
+    return { name: n, gdp_b, inv_percap, jobs, jobs_pct, inv_total, color: colorMap[n] };
   });
 
-  const maxGdp = Math.max(...stateData.map(s => s.gdp_b));
-  const maxInv = Math.max(...stateData.map(s => s.inv_percap));
-  const maxRoi = Math.max(...stateData.map(s => s.roi_num || 0));
+  const maxGdp  = Math.max(...stateData.map(s => s.gdp_b));
+  const maxInv  = Math.max(...stateData.map(s => s.inv_percap));
+  const maxJobs = Math.max(...stateData.map(s => s.jobs));
 
-  // Column grid for metric bars: "140px 1fr 90px"  (name | bar | value)
-  const COL = '140px 1fr 90px';
+  // Column grid: name | bar | value + pct
+  const COL = '140px 1fr 160px';
 
   function metricRows(key, max, fmt) {
     return stateData.map(s => {
@@ -895,15 +885,15 @@ function renderCompare(d, zone) {
     }).join('');
   }
 
-  const gdpRows = metricRows('gdp_b', maxGdp, v => `$${v}B`);
-  const invRows = metricRows('inv_percap', maxInv, v => `$${v}/cap`);
-  const roiRows = stateData.map(s => {
-    const raw = s.roi_num || 0;
-    const pct = maxRoi ? Math.round((raw / maxRoi) * 100) : 0;
+  const gdpRows  = metricRows('gdp_b', maxGdp, v => `$${v}B`);
+  const invRows  = metricRows('inv_percap', maxInv, (v, s) => `$${v.toFixed(2)}/cap &nbsp;<span style="color:var(--muted);font-size:11px;">$${s.inv_total.toFixed(1)}M total</span>`);
+  const jobsRows = stateData.map(s => {
+    const raw = s.jobs || 0;
+    const pct = maxJobs ? Math.round((raw / maxJobs) * 100) : 0;
     return `<div class="metric-state-row" style="grid-template-columns:${COL}">
       <div class="metric-state-name">${s.name}</div>
       <div class="metric-bar-wrap"><div class="metric-bar-fill" style="width:${pct}%;background:${s.color}"></div></div>
-      <div class="metric-val">${raw ? '$' + raw.toLocaleString() : 'N/A'}</div>
+      <div class="metric-val">${raw ? raw.toLocaleString() : 'N/A'} &nbsp;<span style="color:var(--muted);font-size:11px;">${s.jobs_pct}% of workforce</span></div>
     </div>`;
   }).join('');
 
@@ -915,10 +905,6 @@ function renderCompare(d, zone) {
     return `
       <div class="summary-card" style="border-top-color:${stateColor}">
         <div class="sc-name">${s.state}</div>
-        <div class="sc-score-row">
-          <div class="sc-score" style="color:${sc}">${s.overall_score}</div>
-          <div class="sc-score-sub">/ 100</div>
-        </div>
         <div class="sc-narrative">${s.narrative}</div>
       </div>`;
   }).join('');
@@ -932,7 +918,7 @@ function renderCompare(d, zone) {
 
       <div class="metric-cards">
         <div class="metric-card">
-          <div class="metric-card-label">Creative GDP Output</div>
+          <div class="metric-card-label">Arts & Culture Total GDP</div>
           <div class="metric-row">${gdpRows}</div>
         </div>
         <div class="metric-card">
@@ -940,8 +926,8 @@ function renderCompare(d, zone) {
           <div class="metric-row">${invRows}</div>
         </div>
         <div class="metric-card">
-          <div class="metric-card-label">Return per $1 Invested</div>
-          <div class="metric-row">${roiRows}</div>
+          <div class="metric-card-label">Creative Jobs</div>
+          <div class="metric-row">${jobsRows}</div>
         </div>
       </div>
 
@@ -983,7 +969,7 @@ function submitModalEmail() {
   fetch(LOGGER, {
     method: 'POST', mode: 'no-cors',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ timestamp: humanTime, event: 'modal_submit', app: 'Creative Economy Scorecard', url: window.location.href, score: '', firstName: firstName, email: email, subscribe: 'yes' })
+    body: JSON.stringify({ timestamp: humanTime, event: 'modal_submit', app: 'Creative Industries Scorecard', url: window.location.href, score: '', firstName: firstName, email: email, subscribe: 'yes' })
   }).catch(function() {});
   var box = document.querySelector('.modal-box');
   box.innerHTML = '<div class="modal-title">Subscribe <em>Now</em></div><div style="font-size:14px;color:#be3650;line-height:1.6;padding:8px 0;">Thank you! You\'ve been subscribed.<br>Check your email for a welcome message.</div><div onclick="closeSubscribeModal()" style="margin-top:1rem;font-size:13px;font-weight:500;color:#f0ede8;cursor:pointer;">Close</div>';
