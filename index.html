@@ -463,7 +463,7 @@ select.state-pick.optional:not([value=""]):not([data-empty="true"]){
 
   </div>
 
-  <button class="add-state-btn" id="add-btn" onclick="addSelector()">+ add another state to compare</button>
+  <button class="add-state-btn hidden" id="add-btn" onclick="addSelector()">+ add another state to compare</button>
 
   <div class="run-wrap">
     <button class="btn-run" id="run-btn" onclick="runScorecard()">Score These States →</button>
@@ -585,8 +585,16 @@ function addSelector() {
     <button class="sel-remove" onclick="removeSelector(${selectorCount})">×</button>
   `;
   document.getElementById('selectors').appendChild(row);
-  if (selectorCount >= MAX_SELECTORS) {
-    document.getElementById('add-btn').classList.add('hidden');
+  const sel = row.querySelector('select');
+  sel.addEventListener('change', handleStateChange);
+}
+
+function handleStateChange() {
+  // Auto-add a new row when the last selector gets a value
+  const allSelects = document.querySelectorAll('.state-pick');
+  const last = allSelects[allSelects.length - 1];
+  if (last.value && selectorCount < MAX_SELECTORS) {
+    addSelector();
   }
 }
 
@@ -594,9 +602,11 @@ function removeSelector(n) {
   const row = document.getElementById(`sel-row-${n}`);
   if (row) row.remove();
   selectorCount = Math.max(1, selectorCount - 1);
-  document.getElementById('add-btn').classList.remove('hidden');
   renumberSelectors();
 }
+
+// Wire the first selector
+document.getElementById('sel-1').addEventListener('change', handleStateChange);
 
 function renumberSelectors() {
   const rows = document.querySelectorAll('.sel-row');
@@ -630,10 +640,7 @@ async function runScorecard() {
   zone.innerHTML = `
     <div class="loading-state">
       <div class="loading-spinner"></div>
-      <div class="loading-state-label">Analyzing creative economies</div>
-      <div class="loading-text">
-        Grounding in BEA federal data · NASAA state investment data · ${states.length > 1 ? 'Building comparison across ' + states.length + ' states' : 'Scoring ' + states[0]}
-      </div>
+      <div class="loading-state-label">Analyzing creative industries</div>
     </div>
   `;
   zone.scrollIntoView({behavior:'smooth', block:'start'});
@@ -648,7 +655,6 @@ async function runScorecard() {
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 3000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
         messages: [{ role: 'user', content: prompt }]
       })
     });
